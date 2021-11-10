@@ -35,7 +35,7 @@
         app:layout_constraintTop_toBottomOf="@+id/home_day_header" />
 
     <TextView
-        android:id="@+id/home_todays_summary"
+        android:id="@+id/saved_meals_albums"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -56,6 +56,6 @@
         android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/home_todays_summary" />
+        app:layout_constraintTop_toBottomOf="@+id/saved_meals_albums" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

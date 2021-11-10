@@ -1,59 +1,70 @@
 package com.example.foodieplanner
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import org.w3c.dom.Text
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MealFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MealFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private val ingredients = ArrayList<Ingredient>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_meal, container, false)
+        ingredients.add(Ingredient("5", "Eggs"))
+        ingredients.add(Ingredient("1 Cup", "Milk"))
+        ingredients.add(Ingredient("2 Cups", "Cheese"))
+
+        var view = inflater.inflate(R.layout.fragment_meal, container, false)
+
+        recyclerView = view.findViewById(R.id.saved_meals_albums_meals_ingredient_list)
+        recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        viewAdapter = IngredientsAdapter(ingredients)
+        recyclerView.adapter = viewAdapter
+        return view
+    }
+}
+
+class IngredientsAdapter(private val ingredientList: ArrayList<Ingredient>):
+    RecyclerView.Adapter<IngredientsAdapter.ViewHolder>() {
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): IngredientsAdapter.ViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(
+            R.layout.ingredient_item_view,
+            parent, false
+        )
+        return ViewHolder(v)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MealFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MealFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bindItems(ingredientList[position])
+    }
+
+    override fun getItemCount() = ingredientList.size
+
+    class ViewHolder(private val view: View) :
+        RecyclerView.ViewHolder(view) {
+        fun bindItems(ingredient: Ingredient) {
+            val amount: TextView = itemView.findViewById(R.id.ingredient_amount)
+            amount.text = ingredient.amount
+
+            val name: TextView = itemView.findViewById(R.id.ingredient_name)
+            name.text = ingredient.name
+        }
     }
 }
