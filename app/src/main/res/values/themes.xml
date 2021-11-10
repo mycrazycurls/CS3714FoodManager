@@ -1,9 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.FoodiePlanner" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.FoodiePlanner" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/presitgeblue</item>
-        <item name="colorPrimaryVariant">@color/grisilla</item>
+        <item name="colorPrimaryVariant">@color/twinkleblue</item>
         <item name="colorOnPrimary">@color/antiwhite</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>

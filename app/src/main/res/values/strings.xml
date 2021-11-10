@@ -2,4 +2,12 @@
     <string name="app_name">Food Manager</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    // Menus
+    <string name="main_menu_add">Add Meal</string>
+    <string name="bottom_menu_home">Home</string>
+    <string name="bottom_menu_meals">Meals</string>
+    <string name="bottom_menu_plan">Plan</string>
+
 </resources>

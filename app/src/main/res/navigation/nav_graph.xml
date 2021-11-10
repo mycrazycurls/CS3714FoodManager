@@ -9,14 +9,7 @@
         android:id="@+id/homeFragment"
         android:name="com.example.foodieplanner.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_savedMealsFragment"
-            app:destination="@id/savedMealsFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_plannerFragment"
-            app:destination="@id/plannerFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/savedMealsFragment"
         android:name="com.example.foodieplanner.SavedMealsFragment"

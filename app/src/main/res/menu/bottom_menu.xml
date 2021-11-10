@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
-        android:icon="@drawable/home"
-        android:title="Home"/>
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_home"
+        android:title="@string/bottom_menu_home"/>
 
     <item
-        android:id="@+id/navigation_meals"
-        android:icon="@drawable/food"
-        android:title="Meals"/>
+        android:id="@+id/plannerFragment"
+        android:icon="@drawable/ic_list"
+        android:title="@string/bottom_menu_plan"/>
 
     <item
-        android:id="@+id/navigation_plans"
-        android:icon="@drawable/bag"
-        android:title="Plans"/>
+        android:id="@+id/savedMealsFragment"
+        android:icon="@drawable/ic_meal"
+        android:title="@string/bottom_menu_meals"/>
 
 </menu>

@@ -21,8 +21,5 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(R.id.saved_meals_button).setOnClickListener {
-            view.findNavController().navigate(R.id.action_homeFragment_to_savedMealsFragment)
-        }
     }
 }
