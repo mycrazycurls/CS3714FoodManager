@@ -10,4 +10,7 @@
     <string name="bottom_menu_meals">Meals</string>
     <string name="bottom_menu_plan">Plan</string>
 
+    //Plan Fragment
+    <string name="grocerylist">View Grocery List</string>
+
 </resources>

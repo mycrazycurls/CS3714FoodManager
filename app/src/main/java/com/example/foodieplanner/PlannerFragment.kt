@@ -1,15 +1,21 @@
 package com.example.foodieplanner
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
+import android.view.*
+import android.widget.CheckBox
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.core.util.Pair
+import androidx.recyclerview.widget.RecyclerView
+import com.example.foodieplanner.databinding.FragmentPlannerBinding
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -17,33 +23,144 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class PlannerFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var binding: FragmentPlannerBinding
+    private var groceryListRecyclerView: RecyclerView? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // indicate that there is an options menu present
+        setHasOptionsMenu(true)
+
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_planner, container, false)
+        binding = FragmentPlannerBinding.inflate(layoutInflater)
+
+        // Initial range of dates
+        val today = MaterialDatePicker.todayInUtcMilliseconds()
+        val later = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        later.timeInMillis = today
+        later.add(Calendar.DAY_OF_MONTH,5)
+
+        // Initialize date range text
+        binding.planTopBar.title = milisecDateToString(today, later.timeInMillis)
+        //binding.planTopBar.subtitle = "Groceries"
+
+        // Configure dateRangePicker popup
+        val constraintsBuilder =
+            CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.now())
+        val dateRangePicker =
+            MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText("Select dates")
+                .setSelection(
+                    Pair(
+                        today,
+                        later.timeInMillis
+                    )
+                )
+                .setCalendarConstraints(constraintsBuilder.build())
+                .build()
+
+        dateRangePicker.addOnDismissListener {
+            val pair = dateRangePicker.selection
+            if (pair?.first != null && pair.second != null)
+                binding.planTopBar.title = milisecDateToString(pair.first, pair.second)
+                //binding.planSelectDates.text = milisecDateToString(pair.first, pair.second)
+        }
+
+        // top bar configuration
+//        topAppBar.setNavigationOnClickListener {
+//            // Handle navigation icon press
+//        }
+        binding.planTopBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.plan_menu_calender -> {
+                    activity?.let {
+                        dateRangePicker.show(
+                            it.supportFragmentManager,
+                            "groceryDateRange"
+                        )
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // populate recycler view
+        val adapter = SingleLineItemAdapter()
+        groceryListRecyclerView = binding.planGroceryListRecycler
+        groceryListRecyclerView?.adapter = adapter
+
+        return return binding.root
     }
+
+    fun milisecDateToString(first : Long, second: Long) : String {
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        calendar.timeInMillis = first
+        var str = "${calendar[Calendar.MONTH]}/${calendar[Calendar.DATE]}"
+        calendar.timeInMillis = second
+        str += " - ${calendar[Calendar.MONTH]}/${calendar[Calendar.DATE]}"
+        return str
+    }
+
+    // to populate recycler view
+    inner class SingleLineItemAdapter: RecyclerView.Adapter<SingleLineItemViewHolder>() {
+
+        var data = arrayListOf<String>()
+            set(value) {
+                field = value
+                notifyDataSetChanged()
+            }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SingleLineItemViewHolder {
+            val layoutInflater = LayoutInflater.from(parent.context)
+            val view = layoutInflater.inflate(R.layout.material_list_item_single_line, parent, false) as LinearLayout
+            return SingleLineItemViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: SingleLineItemViewHolder, position: Int) {
+            holder.checkbox.text = "Baking Soda"
+            holder.quantity.text = "5 TBSP"
+        }
+
+        override fun getItemCount(): Int {
+            return 20
+        }
+
+
+    }
+
+    inner class SingleLineItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+        val checkbox: CheckBox = view.findViewById(R.id.plan_grocery_checkbox)
+        val quantity: TextView = view.findViewById(R.id.plan_grocery_quantity)
+
+    }
+
+
+
+
+
+
 
     companion object {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment PlannerFragment.
          */
         // TODO: Rename and change types and number of parameters
@@ -51,8 +168,6 @@ class PlannerFragment : Fragment() {
         fun newInstance(param1: String, param2: String) =
             PlannerFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
     }

@@ -9,7 +9,12 @@
         android:id="@+id/homeFragment"
         android:name="com.example.foodieplanner.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_dayFragment"
+            app:destination="@id/dayFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/savedMealsFragment"
         android:name="com.example.foodieplanner.SavedMealsFragment"
@@ -17,7 +22,8 @@
         tools:layout="@layout/fragment_saved_meals" >
         <action
             android:id="@+id/action_savedMealsFragment_to_albumsFragment"
-            app:destination="@id/albumsFragment" />
+            app:destination="@id/albumsFragment"
+            app:popUpTo="@id/savedMealsFragment" />
     </fragment>
     <fragment
         android:id="@+id/plannerFragment"
@@ -27,9 +33,6 @@
         <action
             android:id="@+id/action_plannerFragment_to_groceryListFragment"
             app:destination="@id/groceryListFragment" />
-        <action
-            android:id="@+id/action_plannerFragment_to_dayFragment"
-            app:destination="@id/dayFragment" />
     </fragment>
     <fragment
         android:id="@+id/albumsFragment"
@@ -38,7 +41,8 @@
         tools:layout="@layout/fragment_albums" >
         <action
             android:id="@+id/action_albumsFragment_to_mealFragment"
-            app:destination="@id/mealFragment" />
+            app:destination="@id/mealFragment"
+            app:popUpTo="@id/albumsFragment" />
     </fragment>
     <fragment
         android:id="@+id/groceryListFragment"

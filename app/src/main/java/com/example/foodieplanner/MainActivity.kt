@@ -30,8 +30,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // toolbar
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        //val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        //setSupportActionBar(toolbar)
 
         // nav host
         val host: NavHostFragment = supportFragmentManager
@@ -40,10 +40,12 @@ class MainActivity : AppCompatActivity() {
         // nav controller
         val navController = host.navController
 
-        appBarConfiguration = AppBarConfiguration(navController.graph)
+        //val set: Set<Int> = setOf(R.id.homeFragment,R.id.plannerFragment,R.id.savedMealsFragment)
+        //appBarConfiguration = AppBarConfiguration(set,null)
+
 
         // setup
-        setupActionBar(navController, appBarConfiguration)
+        //setupActionBar(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -83,26 +85,26 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfig)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val retValue = super.onCreateOptionsMenu(menu)
-//        val navigationView = findViewById<NavigationView>(R.id.nav_view)
-        // The NavigationView already has these same navigation items, so we only add
-        // navigation items to the menu here if there isn't a NavigationView
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        val retValue = super.onCreateOptionsMenu(menu)
+////        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+//        // The NavigationView already has these same navigation items, so we only add
+//        // navigation items to the menu here if there isn't a NavigationView
+//
+////        if (navigationView == null) {
+//        menuInflater.inflate(R.menu.main_menu, menu)
+//        return true
+////        }
+////        return retValue
+//    }
 
-//        if (navigationView == null) {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-//        }
-//        return retValue
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        // Have the NavigationUI look for an action or destination matching the menu
-//        // item id and navigate there if found.
-//        // Otherwise, bubble up to the parent.
-        return item.onNavDestinationSelected(findNavController(R.id.nav_host_fragment))
-                || super.onOptionsItemSelected(item)
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+////        // Have the NavigationUI look for an action or destination matching the menu
+////        // item id and navigate there if found.
+////        // Otherwise, bubble up to the parent.
+//        return item.onNavDestinationSelected(findNavController(R.id.nav_host_fragment))
+//                || super.onOptionsItemSelected(item)
+//    }
 
 }
 
