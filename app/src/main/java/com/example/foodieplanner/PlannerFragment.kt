@@ -119,7 +119,18 @@ class PlannerFragment : Fragment() {
     // to populate recycler view
     inner class SingleLineItemAdapter: RecyclerView.Adapter<SingleLineItemViewHolder>() {
 
-        var data = arrayListOf<String>()
+        var data = arrayListOf<Pair<String,String>>(
+            Pair("Baking Soda","5 tsp"),
+            Pair("Flour","6 cups"),
+            Pair("Sugar","1/2 cup"),
+            Pair("Eggs","1 dozen"),
+            Pair("New York Strip","3"),
+            Pair("Bread Loaf","1"),
+            Pair("Cheddar Cheese","16 ounces"),
+            Pair("Milk","1 gallon"),
+            Pair("Tomato","5"),
+            Pair("Strawberries","2 lbs"),
+        )
             set(value) {
                 field = value
                 notifyDataSetChanged()
@@ -132,12 +143,12 @@ class PlannerFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: SingleLineItemViewHolder, position: Int) {
-            holder.checkbox.text = "Baking Soda"
-            holder.quantity.text = "5 TBSP"
+            holder.checkbox.text = "  " + data.get(position).first
+            holder.quantity.text = data.get(position).second
         }
 
         override fun getItemCount(): Int {
-            return 20
+            return data.size
         }
 
 
