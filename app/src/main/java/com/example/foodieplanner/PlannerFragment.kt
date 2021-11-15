@@ -54,7 +54,7 @@ class PlannerFragment : Fragment() {
         later.add(Calendar.DAY_OF_MONTH,5)
 
         // Initialize date range text
-        binding.planTopBar.title = milisecDateToString(today, later.timeInMillis)
+        //binding.planTopBar.title = milisecDateToString(today, later.timeInMillis)
         //binding.planTopBar.subtitle = "Groceries"
 
         // Configure dateRangePicker popup
@@ -76,26 +76,27 @@ class PlannerFragment : Fragment() {
         dateRangePicker.addOnDismissListener {
             val pair = dateRangePicker.selection
             if (pair?.first != null && pair.second != null)
-                binding.planTopBar.title = milisecDateToString(pair.first, pair.second)
-                //binding.planSelectDates.text = milisecDateToString(pair.first, pair.second)
+                //binding.planTopBar.title = milisecDateToString(pair.first, pair.second)
+                binding.planCalendarButton.text = milisecDateToString(pair.first, pair.second)
         }
 
         // top bar configuration
-//        topAppBar.setNavigationOnClickListener {
+//      binding.planTopBar.setNavigationOnClickListener {
 //            // Handle navigation icon press
 //        }
-        binding.planTopBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.plan_menu_calender -> {
-                    activity?.let {
-                        dateRangePicker.show(
-                            it.supportFragmentManager,
-                            "groceryDateRange"
-                        )
-                    }
-                    true
-                }
-                else -> false
+//        binding.planTopBar.setOnMenuItemClickListener { menuItem ->
+//            when (menuItem.itemId) {
+//                else -> false
+//            }
+//        }
+
+        // open calendar picker
+        binding.planCalendarButton.setOnClickListener {
+            activity?.let {
+                dateRangePicker.show(
+                    it.supportFragmentManager,
+                    "groceryDateRange"
+                )
             }
         }
 

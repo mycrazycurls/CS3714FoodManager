@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentDayBinding
 
@@ -20,7 +21,6 @@ import com.example.foodieplanner.databinding.FragmentDayBinding
 class DayFragment : Fragment() {
 
     private lateinit var binding: FragmentDayBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +37,18 @@ class DayFragment : Fragment() {
 
         val adapter = MealCardAdapter()
         binding.dayMealRecyclerView.adapter = adapter
+
+        binding.dayTopBar.setNavigationOnClickListener {
+            activity?.onBackPressed()
+        }
+        binding.dayTopBar.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId) {
+                R.id.day_toolbar_edit -> {
+                    true
+                }
+                else -> false
+            }
+        }
 
 
         return binding.root
