@@ -29,6 +29,10 @@ class MealFragment : Fragment() {
 
         var view = inflater.inflate(R.layout.fragment_meal, container, false)
 
+        view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.saved_meals_album_meal_toolbar).setNavigationOnClickListener {
+            activity?.onBackPressed()
+        }
+
         recyclerView = view.findViewById(R.id.saved_meals_albums_meals_ingredient_list)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         viewAdapter = IngredientsAdapter(ingredients)

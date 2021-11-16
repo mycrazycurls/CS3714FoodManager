@@ -28,6 +28,10 @@ class SavedMealsFragment : Fragment() {
 
         var view = inflater.inflate(R.layout.fragment_saved_meals, container, false)
 
+        view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.saved_meals_toolbar).setNavigationOnClickListener {
+            activity?.onBackPressed()
+        }
+
         recyclerView = view.findViewById(R.id.saved_meals_albums_list)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         viewAdapter = AlbumnAdapter(albums)
