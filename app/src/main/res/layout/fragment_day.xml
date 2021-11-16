@@ -28,7 +28,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:menu="@menu/day_menu"
                 app:navigationIcon="@drawable/ic_day_navigation"
-                app:title="Saturday, Nov 13th"
+                app:title="Tuesday, Nov 16th"
                 app:titleCentered="true" />
 
         </com.google.android.material.appbar.AppBarLayout>
