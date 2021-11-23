@@ -4,13 +4,26 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
+
+
     // Menus
     <string name="main_menu_add">Add Meal</string>
     <string name="bottom_menu_home">Home</string>
     <string name="bottom_menu_meals">Meals</string>
     <string name="bottom_menu_plan">Plan</string>
 
-    //Plan Fragment
+    // Plan Fragment
     <string name="grocerylist">View Grocery List</string>
+
+    // Add Ingredient Fragment
+    <string name="us_standard">US</string>
+    <string name="metric_standard">Metric</string>
+    <string name="volume">Volume</string>
+    <string name="weight">Weight</string>
+    <string name="absolute">Quantity</string>
+    <string name="standard">Standard</string>
+    <string name="measurement">Measure By</string>
+    <string name="unit">Units</string>
+
 
 </resources>
