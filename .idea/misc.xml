@@ -10,17 +10,24 @@
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/drawable/ic_meal.xml" value="0.29583333333333334" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout-h470dp/activity_main.xml" value="0.3671875" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/activity_main.xml" value="0.335" />
+        <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/card_new_meal_ingredient.xml" value="0.17798913043478262" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/day_meal_card.xml" value="0.1947463768115942" />
+        <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/form_new_ingredient.xml" value="0.375" />
+        <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/form_new_meal.xml" value="0.2796875" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/fragment_day.xml" value="0.25" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/fragment_planner.xml" value="0.25" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/fragment_saved_meals.xml" value="0.25" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/home_calendar_card.xml" value="0.335" />
+        <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/ingredient_item_view.xml" value="0.17798913043478262" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/ingredient_units_chip.xml" value="0.25" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/material_list_item_single_line.xml" value="0.335" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/meal_card_view.xml" value="0.13601823708206687" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/new_ingredient_form.xml" value="0.25" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/new_meal_form.xml" value="0.25" />
+        <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/view_new_meal_ingredient.xml" value="0.335" />
+        <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/view_new_meal_ingredient_listitem.xml" value="0.17798913043478262" />
+        <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/layout/view_planner_listitem.xml" value="0.335" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/menu/bottom_menu.xml" value="0.2796875" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/menu/contextual_action_bar.xml" value="0.23703703703703705" />
         <entry key="..\:/Users/brand/AndroidStudioProjects/FoodiePlanner/app/src/main/res/menu/day_menu.xml" value="0.2796875" />

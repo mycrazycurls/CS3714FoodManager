@@ -16,7 +16,9 @@
         android:text="  Checkbox"
         android:textColor="@color/presitgeblue"
         android:textSize="16sp"
-        android:textStyle="normal"></com.google.android.material.checkbox.MaterialCheckBox>
+        android:textStyle="normal">
+
+    </com.google.android.material.checkbox.MaterialCheckBox>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/plan_grocery_quantity"
@@ -26,6 +28,8 @@
         android:text="TextView"
         android:textAlignment="viewEnd"
         android:textColor="@color/grisilla"
-        android:textSize="16sp"></com.google.android.material.textview.MaterialTextView>
+        android:textSize="16sp">
+
+    </com.google.android.material.textview.MaterialTextView>
 
 </LinearLayout>

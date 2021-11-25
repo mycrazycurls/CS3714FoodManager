@@ -1,17 +1,13 @@
 package com.example.foodieplanner
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.w3c.dom.Text
 
 class MealFragment : Fragment() {
 
@@ -23,9 +19,9 @@ class MealFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        ingredients.add(Ingredient("5", "Eggs"))
-        ingredients.add(Ingredient("1 Cup", "Milk"))
-        ingredients.add(Ingredient("2 Cups", "Cheese"))
+        ingredients.add(Ingredient("Eggs", "5", Unit.NONE))
+        ingredients.add(Ingredient( "Milk","1", Unit.CUP))
+        ingredients.add(Ingredient("Cheese", "2", Unit.CUP))
 
         var view = inflater.inflate(R.layout.fragment_meal, container, false)
 
@@ -49,7 +45,7 @@ class IngredientsAdapter(private val ingredientList: ArrayList<Ingredient>):
         viewType: Int
     ): IngredientsAdapter.ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(
-            R.layout.ingredient_item_view,
+            R.layout.view_meal_listitem,
             parent, false
         )
         return ViewHolder(v)
@@ -65,7 +61,7 @@ class IngredientsAdapter(private val ingredientList: ArrayList<Ingredient>):
         RecyclerView.ViewHolder(view) {
         fun bindItems(ingredient: Ingredient) {
             val amount: TextView = itemView.findViewById(R.id.ingredient_amount)
-            amount.text = ingredient.amount
+            amount.text = ingredient.quToString()
 
             val name: TextView = itemView.findViewById(R.id.ingredient_name)
             name.text = ingredient.name

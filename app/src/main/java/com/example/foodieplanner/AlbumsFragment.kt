@@ -48,7 +48,7 @@ class MealAdapter(private val mealList: ArrayList<MealCard>):
         viewType: Int
     ): MealAdapter.ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(
-            R.layout.meal_card_view,
+            R.layout.card_albums_meal,
             parent, false
         )
         return ViewHolder(v)

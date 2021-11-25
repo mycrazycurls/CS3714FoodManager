@@ -111,7 +111,7 @@ class DayFragment : Fragment() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MealCardViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
-            val view = layoutInflater.inflate(R.layout.day_meal_card, parent, false)
+            val view = layoutInflater.inflate(R.layout.card_day_meal, parent, false)
             return MealCardViewHolder(view)
         }
 

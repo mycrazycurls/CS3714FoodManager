@@ -2,7 +2,6 @@ package com.example.foodieplanner
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -139,7 +138,7 @@ class PlannerFragment : Fragment() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SingleLineItemViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
-            val view = layoutInflater.inflate(R.layout.material_list_item_single_line, parent, false) as LinearLayout
+            val view = layoutInflater.inflate(R.layout.view_planner_listitem, parent, false) as LinearLayout
             return SingleLineItemViewHolder(view)
         }
 
