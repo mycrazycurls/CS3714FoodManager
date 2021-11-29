@@ -1,14 +1,9 @@
 package com.example.foodieplanner
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.TextureView
-import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentDayBinding
 
@@ -35,6 +30,30 @@ class DayFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentDayBinding.inflate(layoutInflater)
 
+        val callback = object : ActionMode.Callback {
+            override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+                activity?.menuInflater?.inflate(R.menu.contextual_action_bar, menu)
+                return true
+            }
+
+            override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+                return false
+            }
+
+            override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+                return when (item?.itemId) {
+                    R.id.delete -> {
+                        // Handle delete icon press
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            override fun onDestroyActionMode(mode: ActionMode?) {
+            }
+        }
+
         val adapter = MealCardAdapter()
         binding.dayMealRecyclerView.adapter = adapter
 
@@ -44,6 +63,8 @@ class DayFragment : Fragment() {
         binding.dayTopBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.day_toolbar_edit -> {
+                    val actionMode = activity?.startActionMode(callback)
+                    actionMode?.title = "1 selected"
                     true
                 }
                 else -> false
@@ -62,13 +83,10 @@ class DayFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment DayFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             DayFragment().apply {
                 arguments = Bundle().apply {
                 }
@@ -93,7 +111,7 @@ class DayFragment : Fragment() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MealCardViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
-            val view = layoutInflater.inflate(R.layout.day_meal_card, parent, false)
+            val view = layoutInflater.inflate(R.layout.card_day_meal, parent, false)
             return MealCardViewHolder(view)
         }
 
