@@ -1,12 +1,10 @@
 package com.example.foodieplanner
 
-import android.app.Dialog
 import android.os.Bundle
-import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -15,13 +13,14 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 class NewMealDialog: DialogFragment() {
+    private val model: Model by activityViewModels()
 
     private lateinit var binding: FormNewMealBinding
     private val toolbar: MaterialToolbar? = null
@@ -30,7 +29,10 @@ class NewMealDialog: DialogFragment() {
     private val standardWeights = arrayListOf(Unit.LB,Unit.OUNCE)
     private val metricWeights = arrayListOf(Unit.MG,Unit.GRAM,Unit.KG)
 
-    private var adapter: IngredientAdapter? = null
+    private val ingredientsList = ArrayList<Ingredient>()
+    private val instructionsList = ArrayList<String>()
+
+    private var ingredientAdapter: IngredientAdapter? = null
     private var recipeAdapter: InstructionAdapter? = null
 
     override fun onCreateView(
@@ -42,8 +44,8 @@ class NewMealDialog: DialogFragment() {
         binding = FormNewMealBinding.inflate(layoutInflater)
 
         // Set adapter for ingredient list
-        adapter = IngredientAdapter()
-        binding.ingredientsRecycler.adapter = adapter
+        ingredientAdapter = IngredientAdapter(ingredientsList)
+        binding.ingredientsRecycler.adapter = ingredientAdapter
 
         // Set adapter for instruction list
         recipeAdapter = InstructionAdapter()
@@ -56,6 +58,19 @@ class NewMealDialog: DialogFragment() {
         binding.newMealTopBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.new_meal_save -> {
+                    val name: String = binding.mealNameInput.text.toString()
+                    val ingredients: ArrayList<Ingredient> = arrayListOf()
+                    val instructions: ArrayList<String> = arrayListOf()
+                    for (ingredient in ingredientAdapter!!.dataSet) {
+                        Log.d("Testing", ingredient.toString())
+                        ingredients.add(ingredient)
+                    }
+                    for (instruction in recipeAdapter!!.data) {
+                        Log.d("Testing", instruction)
+                        instructions.add(instruction)
+                    }
+                    val meal = Meal(name, ingredients, instructions)
+                    model.addMeal(meal)
                     this.dismiss()
                     true
                 }
@@ -86,7 +101,7 @@ class NewMealDialog: DialogFragment() {
 
         context?.let { it
             val alertDialog: AlertDialog = MaterialAlertDialogBuilder(it)
-                .setTitle("Add Ingredient")
+                .setTitle("Add Instruction")
                 .setView(view)
                 .setNeutralButton("Cancel") { dialog, which ->
                     // Respond to neutral button press
@@ -170,15 +185,15 @@ class NewMealDialog: DialogFragment() {
                 .setPositiveButton("Save") { dialog, which ->
                     // Respond to positive button press
                     if (pos != null) {
-                        adapter?.editIngredient(pos, currentIngredient)
+                        ingredientAdapter?.editIngredient(pos, currentIngredient)
                     }
                     else {
-                        adapter?.addIngredient(currentIngredient)
+                        ingredientAdapter?.addIngredient(currentIngredient)
                     }
                 }
                 .setNegativeButton("Delete") { dialog, which ->
                     if (pos != null) {
-                        adapter?.deleteIngredient(pos)
+                        ingredientAdapter?.deleteIngredient(pos)
                     }
                 }
                 .create()
@@ -302,10 +317,6 @@ class NewMealDialog: DialogFragment() {
 
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState)
-    }
-
     fun createChipView(unit: Unit, ingredient: Ingredient): Chip {
         val chip: Chip = layoutInflater.inflate(R.layout.chip_new_meal_unit, null) as Chip
         chip.text = unit.toString()
@@ -317,9 +328,8 @@ class NewMealDialog: DialogFragment() {
     }
 
     // New Ingredients to Populate Recycler View
-    inner class IngredientAdapter: RecyclerView.Adapter<NewMealDialog.IngredientViewHolder>() {
-
-        var data = arrayListOf<Ingredient>()
+    inner class IngredientAdapter(val dataSet: ArrayList<Ingredient>):
+        RecyclerView.Adapter<NewMealDialog.IngredientViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewMealDialog.IngredientViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
@@ -328,33 +338,32 @@ class NewMealDialog: DialogFragment() {
         }
 
         override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {
-            holder.text.text = data[position].name
-            holder.quantity.text = data[position].quToString()
-            //holder.count.text = "%2d".format(position+1)
+            holder.text.text = dataSet[position].name
+            holder.quantity.text = dataSet[position].quToString()
 
             holder.text.setOnClickListener {
-                openIngredientDialog(data[position], position)
+                openIngredientDialog(dataSet[position], position)
             }
         }
 
         override fun getItemCount(): Int {
-            return data.size
+            return dataSet.size
         }
 
         fun addIngredient(ingredient: Ingredient?) {
             if (ingredient != null) {
-                data.add(ingredient)
+                dataSet.add(ingredient)
                 notifyDataSetChanged()
             }
         }
 
         fun editIngredient(index: Int, ingredient: Ingredient) {
-            data[index] = ingredient
+            dataSet[index] = ingredient
             notifyDataSetChanged()
         }
 
         fun deleteIngredient(pos: Int) {
-            data.removeAt(pos)
+            dataSet.removeAt(pos)
             notifyDataSetChanged()
         }
     }

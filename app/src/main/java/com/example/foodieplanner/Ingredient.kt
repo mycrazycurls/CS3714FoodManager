@@ -1,5 +1,7 @@
 package com.example.foodieplanner
 
+import com.google.firebase.database.Exclude
+
 
 data class Ingredient(
     var name: String? = null,
@@ -9,6 +11,7 @@ data class Ingredient(
     var standard: String? = "us"
 ) {
 
+    @Exclude
     fun quToString(): String {
         if (unit == Unit.NONE) {
             return "$quantity"
@@ -16,6 +19,7 @@ data class Ingredient(
         return "$quantity ${unit.toString()}"
     }
 
+    @Exclude
     fun setMeasure(checkedId: Int) {
         when (checkedId) {
             R.id.ni_volume_chip -> {
@@ -30,6 +34,7 @@ data class Ingredient(
         }
     }
 
+    @Exclude
     fun setStandard(checkedId: Int) {
         when (checkedId) {
             R.id.ni_us_chip -> {
