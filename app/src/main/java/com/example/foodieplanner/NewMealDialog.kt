@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.foodieplanner.databinding.FormNewMealBinding
@@ -28,7 +29,9 @@ class NewMealDialog: DialogFragment() {
     private val metricVolumes = arrayListOf(Unit.ML,Unit.LITER)
     private val standardWeights = arrayListOf(Unit.LB,Unit.OUNCE)
     private val metricWeights = arrayListOf(Unit.MG,Unit.GRAM,Unit.KG)
+
     private var adapter: IngredientAdapter? = null
+    private var recipeAdapter: InstructionAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,8 +41,13 @@ class NewMealDialog: DialogFragment() {
 
         binding = FormNewMealBinding.inflate(layoutInflater)
 
+        // Set adapter for ingredient list
         adapter = IngredientAdapter()
         binding.ingredientsRecycler.adapter = adapter
+
+        // Set adapter for instruction list
+        recipeAdapter = InstructionAdapter()
+        binding.recipeRecycler.adapter = recipeAdapter
 
         binding.newMealTopBar.setNavigationOnClickListener {
             this.dialog?.cancel()
@@ -56,12 +64,66 @@ class NewMealDialog: DialogFragment() {
         }
 
         binding.newMealOpenNi.setOnClickListener {
-            context?.let { context ->
-                // open a new alert dialog
-                openIngredientDialog()
-            }
+            openIngredientDialog()
         }
+
+        binding.newMealOpenNd.setOnClickListener {
+            openInstructionDialog()
+        }
+
         return binding.root
+    }
+
+    fun openInstructionDialog(existingInstruction: String? = null, pos: Int? = null) {
+        val view: View? = this.layoutInflater.inflate(R.layout.form_new_instruction,null)
+        val descriptionField = view?.findViewById<TextInputLayout>(R.id.instruction_text_field_description)
+        var currentInstruction = ""
+
+        if (existingInstruction != null) {
+            currentInstruction = existingInstruction
+            descriptionField?.editText?.setText(existingInstruction)
+        }
+
+        context?.let { it
+            val alertDialog: AlertDialog = MaterialAlertDialogBuilder(it)
+                .setTitle("Add Ingredient")
+                .setView(view)
+                .setNeutralButton("Cancel") { dialog, which ->
+                    // Respond to neutral button press
+                }
+                .setPositiveButton("Save") { dialog, which ->
+                    // Respond to positive button press
+                    if (pos != null) {
+                        recipeAdapter?.editInstruction(pos, descriptionField?.editText?.text.toString())
+                    }
+                    else {
+                        recipeAdapter?.addInstruction(descriptionField?.editText?.text.toString())
+                    }
+                }
+                .setNegativeButton("Delete") { dialog, which ->
+                    if (pos != null) {
+                        recipeAdapter?.deleteInstruction(pos)
+                    }
+                }
+                .create()
+            alertDialog.setCanceledOnTouchOutside(false)
+            alertDialog.show()
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = existingInstruction != null
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = existingInstruction != null
+
+            descriptionField?.editText?.addTextChangedListener { text ->
+                if (text.isNullOrBlank()) {
+                    descriptionField.error = "Required"
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                }
+                else {
+                    descriptionField.error = null
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                        !descriptionField.editText?.text.isNullOrBlank()
+                }
+            }
+
+        }
     }
 
     fun openIngredientDialog(existingIngredient: Ingredient? = null, pos: Int? = null) {
@@ -298,9 +360,60 @@ class NewMealDialog: DialogFragment() {
     }
 
     inner class IngredientViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        //val count: TextView = view.findViewById(R.id.new_meal_ingredient_number)
         val text: TextView = view.findViewById(R.id.new_meal_ingredient_text)
         val quantity: TextView = view.findViewById(R.id.new_meal_ingredient_quantity)
+    }
+
+
+    // New instructions to populate a recycler view
+    inner class InstructionAdapter: RecyclerView.Adapter<NewMealDialog.InstructionViewHolder>() {
+
+        var data = arrayListOf<String>()
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InstructionViewHolder {
+            val layoutInflater = LayoutInflater.from(parent.context)
+            val view = layoutInflater.inflate(R.layout.view_new_meal_instruction, parent, false)
+            return InstructionViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: InstructionViewHolder, position: Int) {
+            holder.count.text = "Step ${position+1}"
+            holder.description.text = data[position]
+
+            holder.view.setOnClickListener {
+                openInstructionDialog(data[position], position)
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return data.size
+        }
+
+        fun addInstruction(str: String?) {
+            if (str != null) {
+                data.add(str)
+                notifyDataSetChanged()
+            }
+        }
+
+        fun editInstruction(index: Int, str: String?) {
+            if (str != null) {
+                data[index] = str
+                notifyDataSetChanged()
+            }
+        }
+
+        fun deleteInstruction(pos: Int) {
+            data.removeAt(pos)
+            notifyDataSetChanged()
+        }
+    }
+
+
+    inner class InstructionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val description: TextView = view.findViewById(R.id.new_meal_instruction_description)
+        val count: TextView = view.findViewById(R.id.new_meal_instruction_count)
+        val view: LinearLayout = view.findViewById(R.id.instruction_view)
     }
 
 }
