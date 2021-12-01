@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentTransaction
@@ -43,6 +44,11 @@ class SavedMealsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         viewAdapter = AlbumnAdapter(albums)
         recyclerView.adapter = viewAdapter
+
+        view.findViewById<Button>(R.id.saved_meals_all_meals_button).setOnClickListener {
+            view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment)
+        }
+
         return view
     }
 

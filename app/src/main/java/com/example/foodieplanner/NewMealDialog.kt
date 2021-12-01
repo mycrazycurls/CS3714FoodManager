@@ -2,11 +2,11 @@ package com.example.foodieplanner
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.annotation.MenuRes
 import androidx.fragment.app.DialogFragment
 import com.example.foodieplanner.databinding.FormNewMealBinding
 import com.google.android.material.appbar.MaterialToolbar
@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
+import kotlin.Boolean as Boolean1
 
 class NewMealDialog: DialogFragment() {
     private val model: Model by activityViewModels()
@@ -30,7 +31,7 @@ class NewMealDialog: DialogFragment() {
     private val metricWeights = arrayListOf(Unit.MG,Unit.GRAM,Unit.KG)
 
     private val ingredientsList = ArrayList<Ingredient>()
-    private val instructionsList = ArrayList<String>()
+    private var albumName = "None"
 
     private var ingredientAdapter: IngredientAdapter? = null
     private var recipeAdapter: InstructionAdapter? = null
@@ -62,14 +63,12 @@ class NewMealDialog: DialogFragment() {
                     val ingredients: ArrayList<Ingredient> = arrayListOf()
                     val instructions: ArrayList<String> = arrayListOf()
                     for (ingredient in ingredientAdapter!!.dataSet) {
-                        Log.d("Testing", ingredient.toString())
                         ingredients.add(ingredient)
                     }
                     for (instruction in recipeAdapter!!.data) {
-                        Log.d("Testing", instruction)
                         instructions.add(instruction)
                     }
-                    val meal = Meal(name, ingredients, instructions)
+                    val meal = Meal(name, ingredients, instructions, albumName)
                     model.addMeal(meal)
                     this.dismiss()
                     true
@@ -86,8 +85,27 @@ class NewMealDialog: DialogFragment() {
             openInstructionDialog()
         }
 
+        val albumSelectButton = binding.newMealAlbumSelect
+        albumSelectButton.setOnClickListener { v: View ->
+            showMenu(v, R.menu.album_select_menu)
+        }
+
         return binding.root
     }
+
+    private fun showMenu(v: View, @MenuRes menuRes: Int) {
+        val popup = PopupMenu(requireContext(), v)
+        popup.menuInflater.inflate(menuRes, popup.menu)
+
+        popup.setOnMenuItemClickListener { menuItem: MenuItem ->
+            albumName = menuItem.title.toString()
+            true
+        }
+
+        popup.show()
+    }
+
+
 
     fun openInstructionDialog(existingInstruction: String? = null, pos: Int? = null) {
         val view: View? = this.layoutInflater.inflate(R.layout.form_new_instruction,null)
