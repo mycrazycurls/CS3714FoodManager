@@ -1,12 +1,16 @@
 package com.example.foodieplanner
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentTransaction
@@ -14,8 +18,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SavedMealsFragment : Fragment() {
+    private val model: Model by activityViewModels()
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -47,6 +53,24 @@ class SavedMealsFragment : Fragment() {
 
         view.findViewById<Button>(R.id.saved_meals_all_meals_button).setOnClickListener {
             view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment)
+        }
+
+        view.findViewById<Button>(R.id.add_album_button).setOnClickListener {
+            val input = EditText(requireContext())
+            input.setInputType(InputType.TYPE_CLASS_TEXT)
+
+            val dialogBuilder = AlertDialog.Builder(requireContext())
+            dialogBuilder.setTitle("Enter the album name")
+                .setPositiveButton("Save") { dialog, id ->
+                    val albumName: String = input.text.toString()
+                    if (albumName != "") {
+                        model.addAlbum(albumName)
+                    }
+                }
+                .setNegativeButton("Cancel") { dialog, id -> }
+                .setView(input)
+
+            dialogBuilder.show()
         }
 
         return view

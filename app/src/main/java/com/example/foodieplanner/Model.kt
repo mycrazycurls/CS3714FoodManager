@@ -12,4 +12,8 @@ class Model: ViewModel() {
         database.child("Meals").child(meal.name).setValue(meal)
     }
 
+    fun addAlbum(album: String) {
+        database.child("Albums").setValue(album)
+    }
+
 }
