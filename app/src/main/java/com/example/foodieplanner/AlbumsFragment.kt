@@ -29,14 +29,12 @@ class AlbumsFragment : Fragment() {
 
         var view = inflater.inflate(R.layout.fragment_albums, container, false)
 
-        val albumName = this.arguments?.getString("albumName")
-        view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
-            R.id.saved_meals_album_toolbar).title = albumName
-
         recyclerView = view.findViewById(R.id.saved_meals_albums_meal_list)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         viewAdapter = MealAdapter(meals)
         recyclerView.adapter = viewAdapter
+
+        val albumName = this.arguments?.getString("albumName")
 
         // Load albums from firebase
         model.database.child("Meals").get().addOnSuccessListener { data ->
@@ -53,11 +51,22 @@ class AlbumsFragment : Fragment() {
                     }
                 }
 
-                // Display only meals associated with this album instance
-                if (album == albumName) {
+                // All meals
+                if (albumName == "All_") {
+                    view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
+                        R.id.saved_meals_album_toolbar).title = "All meals"
                     (viewAdapter as MealAdapter).insertMeal(name, rating)
                 }
+                // Specific album
+                else {
+                    view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
+                        R.id.saved_meals_album_toolbar).title = albumName
+                    // Display only meals associated with this album instance
+                    if (album == albumName) {
+                        (viewAdapter as MealAdapter).insertMeal(name, rating)
+                    }
 
+                }
             }
         }
 

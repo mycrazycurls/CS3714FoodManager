@@ -62,7 +62,8 @@ class SavedMealsFragment : Fragment() {
         view.findViewById<Button>(R.id.saved_meals_all_meals_button).setOnClickListener {
             (viewAdapter as AlbumnAdapter).clearAlbumList()
             albums.clear()
-            view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment)
+            view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment,
+                bundleOf("albumName" to "All_"))
         }
 
         // Add an album
