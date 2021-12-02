@@ -9,11 +9,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.random.Random
 
 class AlbumsFragment : Fragment() {
+    private val model: Model by activityViewModels()
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -23,63 +26,100 @@ class AlbumsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Dummy data
-        meals.add(MealCard("Omlette", Color.LTGRAY, 8.0))
-        meals.add(MealCard("Pancakes", Color.GRAY, 9.5))
 
         var view = inflater.inflate(R.layout.fragment_albums, container, false)
 
-        view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.saved_meals_album_toolbar).setNavigationOnClickListener {
-            activity?.onBackPressed()
-        }
+        val albumName = this.arguments?.getString("albumName")
 
         recyclerView = view.findViewById(R.id.saved_meals_albums_meal_list)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         viewAdapter = MealAdapter(meals)
         recyclerView.adapter = viewAdapter
 
+        // Load albums from firebase
+        model.database.child("Meals").get().addOnSuccessListener { data ->
+            for (meal in data.children) {
+                // Extract album the meal belongs to
+                var album: String = ""
+                var rating: Double = 0.0
+                var name: String = ""
+                for (field in meal.children) {
+                    when (field.key) {
+                        "albumName" -> album = field.value.toString()
+                        "name" -> name = field.value.toString()
+                        "rating" -> rating = field.value.toString().toDouble()
+                    }
+                }
+
+                // Display only meals associated with this album instance
+                if (album == albumName) {
+                    (viewAdapter as MealAdapter).insertMeal(name, rating)
+                }
+
+            }
+        }
+
+        view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.saved_meals_album_toolbar).setNavigationOnClickListener {
+            activity?.onBackPressed()
+        }
+
+
         return view
     }
-}
 
-class MealAdapter(private val mealList: ArrayList<MealCard>):
-    RecyclerView.Adapter<MealAdapter.ViewHolder>() {
+    inner class MealAdapter(private val mealList: ArrayList<MealCard>):
+        RecyclerView.Adapter<MealAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): MealAdapter.ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(
-            R.layout.card_albums_meal,
-            parent, false
-        )
-        return ViewHolder(v)
-    }
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): MealAdapter.ViewHolder {
+            val v = LayoutInflater.from(parent.context).inflate(
+                R.layout.card_albums_meal,
+                parent, false
+            )
+            return ViewHolder(v)
+        }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bindItems(mealList[position])
-    }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.bindItems(mealList[position])
+        }
 
-    override fun getItemCount() = mealList.size
+        fun insertMeal(name: String, rating: Double) {
+            val cardColor: Int = getRandomColor()
+            mealList.add(MealCard(name, cardColor, rating))
+            notifyDataSetChanged()
+        }
 
-    class ViewHolder(private val view: View) :
-        RecyclerView.ViewHolder(view) {
-        fun bindItems(mealCard: MealCard) {
-            val title: TextView = itemView.findViewById(R.id.meal_card_title)
-            title.setBackgroundColor(mealCard.color)
-            title.text = mealCard.mealName
-
-            val rating: TextView = itemView.findViewById(R.id.meal_card_rating)
-            rating.text = mealCard.rating.toString()
-
-            val image: ImageView = itemView.findViewById(R.id.album_card_image)
-            when (mealCard.mealName) {
-                "Omlette" -> image.setImageResource(R.drawable.omelette)
-                "Pancakes" -> image.setImageResource(R.drawable.pancakes)
+        private fun getRandomColor(): Int {
+            val rand = Random.nextInt(0, 3)
+            when (rand) {
+                0 -> return Color.BLACK
+                1 -> return Color.DKGRAY
+                2 -> return Color.GRAY
+                3 -> return Color.LTGRAY
             }
+            return Color.BLACK
+        }
 
-            itemView.setOnClickListener {
-                view.findNavController().navigate(R.id.action_albumsFragment_to_mealFragment)
+        override fun getItemCount() = mealList.size
+
+        inner class ViewHolder(private val view: View) :
+            RecyclerView.ViewHolder(view) {
+            fun bindItems(mealCard: MealCard) {
+                val title: TextView = itemView.findViewById(R.id.meal_card_title)
+                title.setBackgroundColor(mealCard.color)
+                title.text = mealCard.mealName
+
+                val rating: TextView = itemView.findViewById(R.id.meal_card_rating)
+                rating.text = mealCard.rating.toString()
+
+                val image: ImageView = itemView.findViewById(R.id.album_card_image)
+                image.setImageResource(R.drawable.default_pic)
+
+                itemView.setOnClickListener {
+                    view.findNavController().navigate(R.id.action_albumsFragment_to_mealFragment)
+                }
             }
         }
     }

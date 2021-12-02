@@ -60,6 +60,7 @@ class NewMealDialog: DialogFragment() {
             when(menuItem.itemId) {
                 R.id.new_meal_save -> {
                     val name: String = binding.mealNameInput.text.toString()
+                    //val rating: Double = bindin.mealRatingInput.text.toDouble()
                     val ingredients: ArrayList<Ingredient> = arrayListOf()
                     val instructions: ArrayList<String> = arrayListOf()
                     for (ingredient in ingredientAdapter!!.dataSet) {
@@ -68,7 +69,7 @@ class NewMealDialog: DialogFragment() {
                     for (instruction in recipeAdapter!!.data) {
                         instructions.add(instruction)
                     }
-                    val meal = Meal(name, ingredients, instructions, albumName)
+                    val meal = Meal(name, ingredients, instructions, albumName, 0.0)
                     model.addMeal(meal)
                     this.dismiss()
                     true
