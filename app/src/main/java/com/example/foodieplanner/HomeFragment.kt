@@ -10,6 +10,10 @@ import androidx.cardview.widget.CardView
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentHomeBinding
+import com.google.android.material.datepicker.MaterialDatePicker
+import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -22,8 +26,26 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater)
 
+        var calendar: Calendar = Calendar.getInstance()
+        val dayOfWeek = SimpleDateFormat("EEEE")
+        val dayOfMonth = SimpleDateFormat("dd")
+
         val adapter = CalendarDayCardAdapter()
         binding.homeRecyclerView.adapter = adapter
+
+        var i = 7
+        while (i>0) {
+            adapter.addCalendarDay(
+                CalendarDay(
+                    dayOfWeek.format(calendar.time),
+                    dayOfMonth.format(calendar.time),
+                    "3 meals", "2000 cals", "$25"
+                )
+            )
+            calendar.add(Calendar.DAY_OF_MONTH,1)
+            i--
+        }
+
 
 
         return return binding.root
@@ -36,15 +58,15 @@ class HomeFragment : Fragment() {
 
     inner class CalendarDayCardAdapter: RecyclerView.Adapter<CalendarDayCardViewHolder>() {
 
-        var data = arrayListOf<calendarDay>(
-            calendarDay("Tuesday","16","3 meals","2000 cals","$25"),
-            calendarDay("Wednesday","17","3 meals","1500 cals","$34"),
-            calendarDay("Thursday","18","4 meals","3000 cals","$60"),
-            calendarDay("Friday","19","1 meal","1200 cals","$15"),
-            calendarDay("Saturday","20","2 meals","2200 cals","$22"),
-            calendarDay("Sunday","21","","",""),
-            calendarDay("Monday","22","","",""),
-        )
+        var data = arrayListOf<CalendarDay>()
+//            calendarDay("","16","3 meals","2000 cals","$25"),
+//            calendarDay("Wednesday","17","3 meals","1500 cals","$34"),
+//            calendarDay("Thursday","18","4 meals","3000 cals","$60"),
+//            calendarDay("Friday","19","1 meal","1200 cals","$15"),
+//            calendarDay("Saturday","20","2 meals","2200 cals","$22"),
+//            calendarDay("Sunday","21","","",""),
+//            calendarDay("Monday","22","","",""),
+//        )
             set(value) {
                 field = value
                 notifyDataSetChanged()
@@ -77,6 +99,11 @@ class HomeFragment : Fragment() {
             return data.size
         }
 
+        fun addCalendarDay(calendarDay: CalendarDay) {
+            data.add(calendarDay)
+            notifyDataSetChanged()
+        }
+
     }
 
     inner class CalendarDayCardViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -89,7 +116,7 @@ class HomeFragment : Fragment() {
     }
 
 
-    data class calendarDay(
+    data class CalendarDay(
         var day: String,
         var date: String,
         var meals: String,
