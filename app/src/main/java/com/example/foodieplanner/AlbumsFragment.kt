@@ -30,6 +30,8 @@ class AlbumsFragment : Fragment() {
         var view = inflater.inflate(R.layout.fragment_albums, container, false)
 
         val albumName = this.arguments?.getString("albumName")
+        view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
+            R.id.saved_meals_album_toolbar).title = albumName
 
         recyclerView = view.findViewById(R.id.saved_meals_albums_meal_list)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)

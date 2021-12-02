@@ -60,7 +60,6 @@ class NewMealDialog: DialogFragment() {
             when(menuItem.itemId) {
                 R.id.new_meal_save -> {
                     val name: String = binding.mealNameInput.text.toString()
-                    //val rating: Double = bindin.mealRatingInput.text.toDouble()
                     val ingredients: ArrayList<Ingredient> = arrayListOf()
                     val instructions: ArrayList<String> = arrayListOf()
                     for (ingredient in ingredientAdapter!!.dataSet) {
@@ -97,6 +96,13 @@ class NewMealDialog: DialogFragment() {
     private fun showMenu(v: View, @MenuRes menuRes: Int) {
         val popup = PopupMenu(requireContext(), v)
         popup.menuInflater.inflate(menuRes, popup.menu)
+
+        model.database.child("Albums").get().addOnSuccessListener { data ->
+            for (album in data.children) {
+                Log.d("Testing", album.value.toString())
+                popup.menu.add(album.value.toString())
+            }
+        }
 
         popup.setOnMenuItemClickListener { menuItem: MenuItem ->
             albumName = menuItem.title.toString()
