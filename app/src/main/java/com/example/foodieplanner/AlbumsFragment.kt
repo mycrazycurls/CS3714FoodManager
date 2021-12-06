@@ -14,6 +14,12 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.random.Random
+import androidx.recyclerview.widget.ItemTouchHelper.Callback.makeMovementFlags
+
+import androidx.recyclerview.widget.ItemTouchHelper
+
+
+
 
 class AlbumsFragment : Fragment() {
     private val model: Model by activityViewModels()
@@ -34,15 +40,35 @@ class AlbumsFragment : Fragment() {
         viewAdapter = MealAdapter(meals)
         recyclerView.adapter = viewAdapter
 
+        // For deleting meals
+        val itemTouchHelperCallback = object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    (viewAdapter as MealAdapter).removeMeal(viewHolder.adapterPosition)
+                }
+
+            }
+
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
         val albumName = this.arguments?.getString("albumName")
 
         // Load albums from firebase
         model.database.child("Meals").get().addOnSuccessListener { data ->
             for (meal in data.children) {
                 // Extract album the meal belongs to
-                var album: String = ""
-                var rating: Double = 0.0
-                var name: String = ""
+                var album = ""
+                var rating = 0.0
+                var name = ""
                 for (field in meal.children) {
                     when (field.key) {
                         "albumName" -> album = field.value.toString()
@@ -74,7 +100,6 @@ class AlbumsFragment : Fragment() {
             activity?.onBackPressed()
         }
 
-
         return view
     }
 
@@ -100,6 +125,13 @@ class AlbumsFragment : Fragment() {
             val cardColor: Int = getRandomColor()
             mealList.add(MealCard(name, cardColor, rating))
             notifyDataSetChanged()
+        }
+
+        fun removeMeal(pos: Int) {
+            model.deleteMeal(mealList[pos].mealName)
+            mealList.removeAt(pos)
+            notifyItemRemoved(pos)
+            notifyItemRangeChanged(pos, mealList.size)
         }
 
         private fun getRandomColor(): Int {

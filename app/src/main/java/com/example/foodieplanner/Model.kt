@@ -12,7 +12,15 @@ class Model: ViewModel() {
         database.child("Meals").child(meal.name).setValue(meal)
     }
 
+    fun deleteMeal(name: String) {
+        database.child("Meals").child(name).removeValue()
+    }
+
     fun addAlbum(album: String) {
         database.child("Albums").child(album).setValue(album)
+    }
+
+    fun deleteAlbum(album: String) {
+        database.child("Albums").child(album).removeValue()
     }
 }

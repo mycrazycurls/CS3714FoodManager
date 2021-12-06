@@ -18,6 +18,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -41,6 +42,26 @@ class SavedMealsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         viewAdapter = AlbumnAdapter(albums)
         recyclerView.adapter = viewAdapter
+
+        // For deleting albums
+        val itemTouchHelperCallback = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                (viewAdapter as AlbumnAdapter).removeAlbum(viewHolder.adapterPosition)
+            }
+
+        }
+
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         // Load albums from firebase
         model.database.child("Albums").get().addOnSuccessListener { data ->
@@ -121,6 +142,13 @@ class SavedMealsFragment : Fragment() {
             notifyDataSetChanged()
             // Save to Firebase
             model.addAlbum(album)
+        }
+
+        fun removeAlbum(pos: Int) {
+            model.deleteAlbum(albumList[pos].albumName)
+            albumList.removeAt(pos)
+            notifyItemRemoved(pos)
+            notifyItemRangeChanged(pos, albumList.size)
         }
 
         fun clearAlbumList() {
