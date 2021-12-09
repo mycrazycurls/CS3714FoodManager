@@ -68,7 +68,8 @@ class NewMealDialog: DialogFragment() {
                     for (instruction in recipeAdapter!!.data) {
                         instructions.add(instruction)
                     }
-                    val meal = Meal(name, ingredients, instructions, albumName, 0.0)
+                    val rating = binding.mealRatingBar.getRating()
+                    val meal = Meal(name, ingredients, instructions, albumName, rating)
                     model.addMeal(meal)
                     this.dismiss()
                     true

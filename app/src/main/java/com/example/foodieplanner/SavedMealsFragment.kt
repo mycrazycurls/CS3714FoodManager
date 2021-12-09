@@ -29,7 +29,7 @@ class SavedMealsFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private val albums = ArrayList<AlbumCard>()
+    private val albums = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +57,6 @@ class SavedMealsFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 (viewAdapter as AlbumnAdapter).removeAlbum(viewHolder.adapterPosition)
             }
-
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
@@ -82,7 +81,6 @@ class SavedMealsFragment : Fragment() {
         // View all meals
         view.findViewById<Button>(R.id.saved_meals_all_meals_button).setOnClickListener {
             (viewAdapter as AlbumnAdapter).clearAlbumList()
-            albums.clear()
             view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment,
                 bundleOf("albumName" to "All_"))
         }
@@ -121,7 +119,7 @@ class SavedMealsFragment : Fragment() {
         }
     }
 
-    inner class AlbumnAdapter(private val albumList: ArrayList<AlbumCard>):
+    inner class AlbumnAdapter(private val albumList: ArrayList<String>):
         RecyclerView.Adapter<AlbumnAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -137,15 +135,13 @@ class SavedMealsFragment : Fragment() {
         }
 
         fun insertAlbum(album: String) {
-            val cardColor: Int = getRandomColor()
-            albumList.add(AlbumCard(album, cardColor))
+            albumList.add(album)
             notifyDataSetChanged()
-            // Save to Firebase
             model.addAlbum(album)
         }
 
         fun removeAlbum(pos: Int) {
-            model.deleteAlbum(albumList[pos].albumName)
+            model.deleteAlbum(albumList[pos])
             albumList.removeAt(pos)
             notifyItemRemoved(pos)
             notifyItemRangeChanged(pos, albumList.size)
@@ -170,13 +166,14 @@ class SavedMealsFragment : Fragment() {
 
         inner class ViewHolder(private val view: View) :
             RecyclerView.ViewHolder(view) {
-            fun bindItems(albumCard: AlbumCard) {
+            fun bindItems(album: String) {
                 val title: TextView = itemView.findViewById(R.id.meal_card_title)
-                title.setBackgroundColor(albumCard.color)
-                title.text = albumCard.albumName
+                val cardColor: Int = getRandomColor()
+                title.setBackgroundColor(cardColor)
+                title.text = album
 
                 val image: ImageView = itemView.findViewById(R.id.album_card_image)
-                when (albumCard.albumName) {
+                when (album) {
                     "Breakfest" -> image.setImageResource(R.drawable.breakfast)
                     "Lunch" -> image.setImageResource(R.drawable.lunch)
                     "Dinner" -> image.setImageResource(R.drawable.dinner)
@@ -185,9 +182,8 @@ class SavedMealsFragment : Fragment() {
 
                 itemView.setOnClickListener {
                     clearAlbumList()
-                    albums.clear()
                     view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment,
-                        bundleOf("albumName" to albumCard.albumName))
+                        bundleOf("albumName" to album))
                 }
             }
         }

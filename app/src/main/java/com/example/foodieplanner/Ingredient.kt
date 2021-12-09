@@ -2,7 +2,6 @@ package com.example.foodieplanner
 
 import com.google.firebase.database.Exclude
 
-
 data class Ingredient(
     var name: String? = null,
     var quantity: String? = null,

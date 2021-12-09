@@ -23,7 +23,7 @@
             android:layout_height="?attr/actionBarSize"
             app:menu="@menu/day_menu"
             app:navigationIcon="@drawable/ic_day_navigation"
-            app:title="Breakfast"
+            app:title="Default"
             app:titleCentered="true" />
 
     </com.google.android.material.appbar.AppBarLayout>

@@ -70,24 +70,23 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-<!--                <Button-->
-<!--                    android:id="@+id/new_meal_rating_select"-->
-<!--                    style="@style/Widget.MaterialComponents.Button"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="0.25"-->
-<!--                    android:layout_marginBottom="16dp"-->
-<!--                    android:text="Rating" />-->
-
                 <Button
                     android:id="@+id/new_meal_album_select"
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="wrap_content"
+                    android:layout_marginVertical="-8dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.25"
                     android:layout_marginBottom="16dp"
                     android:text="Select Album" />
             </LinearLayout>
+
+            <RatingBar
+                android:id="@+id/meal_rating_bar"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"

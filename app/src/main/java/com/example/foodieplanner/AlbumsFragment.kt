@@ -6,27 +6,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.random.Random
-import androidx.recyclerview.widget.ItemTouchHelper.Callback.makeMovementFlags
 
 import androidx.recyclerview.widget.ItemTouchHelper
-
-
-
 
 class AlbumsFragment : Fragment() {
     private val model: Model by activityViewModels()
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private val meals = ArrayList<MealCard>()
+    private val meals = ArrayList<Meal>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,36 +58,64 @@ class AlbumsFragment : Fragment() {
 
         val albumName = this.arguments?.getString("albumName")
 
+        // Set title
+        if (albumName == "All_") {
+            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
+                R.id.saved_meals_album_toolbar).title = "All Meals"
+        }
+        else {
+            view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
+                R.id.saved_meals_album_toolbar).title = albumName
+        }
+
+
         // Load albums from firebase
         model.database.child("Meals").get().addOnSuccessListener { data ->
             for (meal in data.children) {
-                // Extract album the meal belongs to
-                var album = ""
-                var rating = 0.0
+                // Extract meal data
                 var name = ""
-                for (field in meal.children) {
-                    when (field.key) {
-                        "albumName" -> album = field.value.toString()
-                        "name" -> name = field.value.toString()
-                        "rating" -> rating = field.value.toString().toDouble()
+                var ingredients: ArrayList<Ingredient> = arrayListOf()
+                var instructions: ArrayList<String> = arrayListOf()
+                var album = ""
+                var rating = 0.0f
+                for (mealAttr in meal.children) {
+                    when (mealAttr.key) {
+                        "name" -> name = mealAttr.value.toString()
+                        "ingredients" -> {
+                            for (ingredient in mealAttr.children) {
+                                var ingrName = ""
+                                var ingrQuantity = ""
+                                var ingrUnit: Unit? = null
+                                var ingrMeasure = ""
+                                var ingrStandard = ""
+                                for (ingrAttr in ingredient.children) {
+                                    when (ingrAttr.key) {
+                                        "name" -> ingrName = ingrAttr.value.toString()
+                                        "quantity" -> ingrQuantity = ingrAttr.value.toString()
+                                        "unit" -> ingrUnit = Unit.TSP
+                                        "measure" -> ingrMeasure = ingrAttr.value.toString()
+                                        "standard" -> ingrStandard = ingrAttr.value.toString()
+                                    }
+                                }
+                                ingredients.add(Ingredient(ingrName, ingrQuantity, ingrUnit, ingrMeasure, ingrStandard))
+                            }
+                        }
+                        "instructions" -> {
+                            for (instruction in mealAttr.children) {
+                                instructions.add(instruction.value.toString())
+                            }
+                        }
+                        "albumName" -> album = mealAttr.value.toString()
+                        "rating" -> rating = mealAttr.value.toString().toFloat()
                     }
                 }
+                // Rebuild meal
+                val meal = Meal(name, ingredients, instructions, album, rating)
 
-                // All meals
-                if (albumName == "All_") {
-                    view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
-                        R.id.saved_meals_album_toolbar).title = "All meals"
-                    (viewAdapter as MealAdapter).insertMeal(name, rating)
-                }
-                // Specific album
-                else {
-                    view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
-                        R.id.saved_meals_album_toolbar).title = albumName
-                    // Display only meals associated with this album instance
-                    if (album == albumName) {
-                        (viewAdapter as MealAdapter).insertMeal(name, rating)
-                    }
-
+                // Display only items associated with album or all meals if
+                // "All Meals" button was pressed
+                if (albumName == album || albumName == "All_") {
+                    (viewAdapter as MealAdapter).insertMeal(meal)
                 }
             }
         }
@@ -103,13 +127,10 @@ class AlbumsFragment : Fragment() {
         return view
     }
 
-    inner class MealAdapter(private val mealList: ArrayList<MealCard>):
+    inner class MealAdapter(private val mealList: ArrayList<Meal>):
         RecyclerView.Adapter<MealAdapter.ViewHolder>() {
 
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
-        ): MealAdapter.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val v = LayoutInflater.from(parent.context).inflate(
                 R.layout.card_albums_meal,
                 parent, false
@@ -121,17 +142,20 @@ class AlbumsFragment : Fragment() {
             holder.bindItems(mealList[position])
         }
 
-        fun insertMeal(name: String, rating: Double) {
-            val cardColor: Int = getRandomColor()
-            mealList.add(MealCard(name, cardColor, rating))
+        fun insertMeal(meal: Meal) {
+            mealList.add(meal)
             notifyDataSetChanged()
         }
 
         fun removeMeal(pos: Int) {
-            model.deleteMeal(mealList[pos].mealName)
+            model.deleteMeal(mealList[pos].name)
             mealList.removeAt(pos)
             notifyItemRemoved(pos)
             notifyItemRangeChanged(pos, mealList.size)
+        }
+
+        fun clearMealList() {
+            mealList.clear()
         }
 
         private fun getRandomColor(): Int {
@@ -149,19 +173,22 @@ class AlbumsFragment : Fragment() {
 
         inner class ViewHolder(private val view: View) :
             RecyclerView.ViewHolder(view) {
-            fun bindItems(mealCard: MealCard) {
+            fun bindItems(meal: Meal) {
                 val title: TextView = itemView.findViewById(R.id.meal_card_title)
-                title.setBackgroundColor(mealCard.color)
-                title.text = mealCard.mealName
+                val cardColor: Int = getRandomColor()
+                title.setBackgroundColor(cardColor)
+                title.text = meal.name
 
                 val rating: TextView = itemView.findViewById(R.id.meal_card_rating)
-                rating.text = mealCard.rating.toString()
+                rating.text = meal.rating.toString()
 
                 val image: ImageView = itemView.findViewById(R.id.album_card_image)
                 image.setImageResource(R.drawable.default_pic)
 
                 itemView.setOnClickListener {
-                    view.findNavController().navigate(R.id.action_albumsFragment_to_mealFragment)
+                    clearMealList()
+                    view.findNavController().navigate(R.id.action_albumsFragment_to_mealFragment,
+                        bundleOf("mealName" to meal.name))
                 }
             }
         }
