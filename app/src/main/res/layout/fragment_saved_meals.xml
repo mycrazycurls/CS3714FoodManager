@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_search"
+        app:layout_constraintBottom_toTopOf="@+id/saved_meals_all_meals_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -28,20 +28,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <SearchView
-        android:id="@+id/saved_meals_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/ic_search"
-        android:iconifiedByDefault="false"
-        android:queryHint="Search Here"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_all_meals_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saved_meals_appbar" />
-
-
     <Button
         android:id="@+id/saved_meals_all_meals_button"
         style="@style/Widget.MaterialComponents.Button"
@@ -57,7 +43,7 @@
         app:layout_constraintBottom_toTopOf="@+id/saved_meals_albums"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saved_meals_search" />
+        app:layout_constraintTop_toBottomOf="@+id/saved_meals_appbar" />
 
     <TextView
         android:id="@+id/saved_meals_albums"
