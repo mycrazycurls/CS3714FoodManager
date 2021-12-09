@@ -31,7 +31,7 @@ class AlbumsFragment : Fragment() {
 
         var view = inflater.inflate(R.layout.fragment_albums, container, false)
 
-        recyclerView = view.findViewById(R.id.saved_meals_albums_meal_list)
+        recyclerView = view.findViewById(R.id.albums_meal_list)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         viewAdapter = MealAdapter(meals)
         recyclerView.adapter = viewAdapter

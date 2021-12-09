@@ -33,7 +33,7 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="11/14 - 11/15"
+            android:text="@string/plan_calendar_button"
             app:icon="@drawable/ic_calender" />
 
         <TextView
@@ -41,7 +41,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="$130"
+            android:text="@string/cost"
             android:textAlignment="textEnd"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="?android:attr/textColorSecondary" />
@@ -64,6 +64,6 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:text="Complete" />
+        android:text="@string/complete_button" />
 
 </LinearLayout>

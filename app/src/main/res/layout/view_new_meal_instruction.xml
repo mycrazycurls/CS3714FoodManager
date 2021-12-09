@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
-        android:text="Step 1"
+        android:text="@string/new_meal_instruction_count"
         android:textAlignment="textStart"
         android:textAppearance="?attr/textAppearanceListItem" />
 
@@ -23,7 +23,7 @@
         android:id="@+id/new_meal_instruction_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Put the chicken in the oven roast for approximately 40 minutes"
+        android:text="@string/new_meal_instruction_description"
         android:textAlignment="textStart"
         android:textAppearance="?attr/textAppearanceListItemSecondary"
         android:textColor="?android:attr/textColorSecondary" />

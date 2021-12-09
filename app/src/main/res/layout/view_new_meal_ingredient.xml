@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:text="5 cups"
+            android:text="@string/new_meal_ingredient_quantity"
             android:textAlignment="textStart"
             android:textAppearance="?attr/textAppearanceListItemSmall"
             android:textColor="?android:attr/textColorSecondary" />
@@ -30,7 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            android:text="Apples"
+            android:text="@string/new_meal_ingredient_text"
             android:textAlignment="textStart"
             android:textAppearance="?attr/textAppearanceListItem"
             app:drawableEndCompat="@drawable/ic_edit"

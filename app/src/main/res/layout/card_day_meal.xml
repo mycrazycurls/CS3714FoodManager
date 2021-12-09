@@ -18,7 +18,7 @@
             android:id="@+id/day_meal_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title"
+            android:text="@string/day_meal_title"
             android:textAppearance="?attr/textAppearanceHeadline6" />
 
         <TextView
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="subtitle"
+            android:text="@string/day_meal_subtitle"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="?android:attr/textColorSecondary" />
     </LinearLayout>

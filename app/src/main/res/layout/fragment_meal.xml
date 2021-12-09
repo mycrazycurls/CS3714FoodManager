@@ -34,14 +34,14 @@
         android:layout_marginTop="8dp"
         android:layout_gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_albums_meals_ingredients_header"
+        app:layout_constraintBottom_toTopOf="@+id/ingredients_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/saved_meals_album_meal_appbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/saved_meals_albums_meals_ingredients_header"
+        android:id="@+id/ingredients_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -49,29 +49,29 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@color/presitgeblue"
-        android:text="Ingredients"
+        android:text="@string/ingredients_header"
         android:textAlignment="center"
         android:textColor="#EFEDED"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_albums_meals_ingredient_list"
+        app:layout_constraintBottom_toTopOf="@+id/ingredient_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/meal_rating_bar" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/saved_meals_albums_meals_ingredient_list"
+        android:id="@+id/ingredient_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_albums_meals_instructions_header"
+        app:layout_constraintBottom_toTopOf="@+id/instructions_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saved_meals_albums_meals_ingredients_header">
+        app:layout_constraintTop_toBottomOf="@+id/ingredients_header">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
-        android:id="@+id/saved_meals_albums_meals_instructions_header"
+        android:id="@+id/instructions_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -79,29 +79,29 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@color/presitgeblue"
-        android:text="Instructions"
+        android:text="@string/instructions_header"
         android:textAlignment="center"
         android:textColor="#EFEDED"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_albums_meals_instructions_list"
+        app:layout_constraintBottom_toTopOf="@+id/instructions_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/saved_meals_albums_meals_ingredient_list" />
+        app:layout_constraintTop_toBottomOf="@id/ingredient_list" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/saved_meals_albums_meals_instructions_list"
+        android:id="@+id/instructions_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_albums_meals_cost"
+        app:layout_constraintBottom_toTopOf="@+id/meal_cost"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saved_meals_albums_meals_instructions_header">
+        app:layout_constraintTop_toBottomOf="@+id/instructions_header">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
-        android:id="@+id/saved_meals_albums_meals_cost"
+        android:id="@+id/meal_cost"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -109,29 +109,29 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@color/presitgeblue"
-        android:text="$10.98"
+        android:text="@string/meal_cost"
         android:textAlignment="center"
         android:textColor="#EFEDED"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_albums_meals_calories"
+        app:layout_constraintBottom_toTopOf="@+id/meal_calories"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saved_meals_albums_meals_instructions_list" />
+        app:layout_constraintTop_toBottomOf="@+id/instructions_list" />
 
     <TextView
-        android:id="@+id/saved_meals_albums_meals_calories"
+        android:id="@+id/meal_calories"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:background="@color/presitgeblue"
-        android:text="1200 Calories"
+        android:text="@string/meal_calories"
         android:textAlignment="center"
         android:textColor="#EFEDED"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saved_meals_albums_meals_cost" />
+        app:layout_constraintTop_toBottomOf="@+id/meal_cost" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

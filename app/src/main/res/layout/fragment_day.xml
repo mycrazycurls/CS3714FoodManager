@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:lines="2"
-                android:text="Cost\n$100"
+                android:text="@string/cost_n_100"
                 android:textAlignment="center"
                 android:textSize="16sp"></com.google.android.material.textview.MaterialTextView>
 
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:lines="2"
-                android:text="Calories\n1500g "
+                android:text="@string/calories_n1500g"
                 android:textAlignment="center"
                 android:textSize="16sp"></com.google.android.material.textview.MaterialTextView>
         </LinearLayout>

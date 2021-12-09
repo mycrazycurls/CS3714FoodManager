@@ -8,9 +8,9 @@
         android:id="@+id/instruction_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_weight="0.1"
-        android:text="Default"
+        android:text="@string/instruction_number"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -18,9 +18,9 @@
         android:id="@+id/instruction_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_weight="0.9"
-        android:text="Default"
+        android:text="@string/instruction_data"
         android:textAlignment="textStart"
         android:textSize="20sp" />
 </LinearLayout>

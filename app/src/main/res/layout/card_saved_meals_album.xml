@@ -10,6 +10,7 @@
 
         <ImageView
             android:id="@+id/album_card_image"
+            android:contentDescription="@string/album_card"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:scaleType="centerCrop" />

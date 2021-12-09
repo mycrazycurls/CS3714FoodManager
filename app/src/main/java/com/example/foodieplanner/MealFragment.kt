@@ -1,7 +1,6 @@
 package com.example.foodieplanner
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -34,12 +33,12 @@ class MealFragment : Fragment() {
         view.findViewById<com.google.android.material.appbar.MaterialToolbar>(
             R.id.saved_meals_album_meal_toolbar).title = mealName
 
-        ingredientRecylerView = view.findViewById(R.id.saved_meals_albums_meals_ingredient_list)
+        ingredientRecylerView = view.findViewById(R.id.ingredient_list)
         ingredientRecylerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         ingredientViewAdapter = IngredientsAdapter(ingredients)
         ingredientRecylerView.adapter = ingredientViewAdapter
 
-        instructionRecyclerView = view.findViewById(R.id.saved_meals_albums_meals_instructions_list)
+        instructionRecyclerView = view.findViewById(R.id.instructions_list)
         instructionRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         instructionViewAdapter = InstructionsAdapter(instructions)
         instructionRecyclerView.adapter = instructionViewAdapter

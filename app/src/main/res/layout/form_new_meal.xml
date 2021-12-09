@@ -78,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.25"
                     android:layout_marginBottom="16dp"
-                    android:text="Select Album" />
+                    android:text="@string/new_meal_album_select" />
             </LinearLayout>
 
             <RatingBar
@@ -105,7 +105,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="Ingredients"
+                    android:text="@string/ingredients_text"
                     android:textAppearance="?attr/textAppearanceHeadline6" />
 
                 <Button
@@ -141,7 +141,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="Instructions"
+                    android:text="@string/instructions_text"
                     android:textAppearance="?attr/textAppearanceHeadline6" />
 
                 <Button

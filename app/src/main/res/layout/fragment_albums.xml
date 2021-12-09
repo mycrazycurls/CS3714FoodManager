@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/saved_meals_albums_search"
+        app:layout_constraintBottom_toTopOf="@+id/album_search_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
@@ -29,26 +29,26 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <SearchView
-        android:id="@+id/saved_meals_albums_search"
+        android:id="@+id/album_search_bar"
         android:layout_width="320dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/ic_search"
         android:iconifiedByDefault="false"
         android:queryHint="Search Here"
-        app:layout_constraintBottom_toTopOf="@id/saved_meals_albums_meal_list"
+        app:layout_constraintBottom_toTopOf="@id/albums_meal_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/saved_meals_album_appbar" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/saved_meals_albums_meal_list"
+        android:id="@+id/albums_meal_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saved_meals_albums_search" />
+        app:layout_constraintTop_toBottomOf="@+id/album_search_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
