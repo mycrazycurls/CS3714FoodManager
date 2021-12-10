@@ -75,40 +75,42 @@ class SavedMealsFragment : Fragment() {
         }
 
         // Add a meal
-        view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.savedmeals_new_meal_button).setOnClickListener {
-            showDialog()
+        if (activity?.resources?.configuration?.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.savedmeals_new_meal_button).setOnClickListener {
+                showDialog()
+            }
         }
 
         // View all meals
-        view.findViewById<Button>(R.id.saved_meals_all_meals_button).setOnClickListener {
-            (viewAdapter as AlbumnAdapter).clearAlbumList()
-            view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment,
-                bundleOf("albumName" to "All_"))
+        if (activity?.resources?.configuration?.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            view.findViewById<Button>(R.id.saved_meals_all_meals_button).setOnClickListener {
+                (viewAdapter as AlbumnAdapter).clearAlbumList()
+                view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment,
+                    bundleOf("albumName" to "All_"))
+            }
         }
 
         // Add an album
-        view.findViewById<Button>(R.id.add_album_button).setOnClickListener {
-            val input = EditText(requireContext())
-            input.setInputType(InputType.TYPE_CLASS_TEXT)
+        if (activity?.resources?.configuration?.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            view.findViewById<Button>(R.id.add_album_button).setOnClickListener {
+                val input = EditText(requireContext())
+                input.setInputType(InputType.TYPE_CLASS_TEXT)
 
-            val dialogBuilder = AlertDialog.Builder(requireContext())
-            dialogBuilder.setTitle("Enter the album name")
-                .setPositiveButton("Save") { dialog, id ->
-                    val albumName: String = input.text.toString()
-                    if (albumName != "") {
-                        (viewAdapter as AlbumnAdapter).insertAlbum(albumName)
+                val dialogBuilder = AlertDialog.Builder(requireContext())
+                dialogBuilder.setTitle("Enter the album name")
+                    .setPositiveButton("Save") { dialog, id ->
+                        val albumName: String = input.text.toString()
+                        if (albumName != "") {
+                            (viewAdapter as AlbumnAdapter).insertAlbum(albumName)
+                        }
                     }
-                }
-                .setNegativeButton("Cancel") { dialog, id -> }
-                .setView(input)
+                    .setNegativeButton("Cancel") { dialog, id -> }
+                    .setView(input)
 
-            dialogBuilder.show()
+                dialogBuilder.show()
+            }
         }
 
-        // Hide floating button in landscape mode
-        if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.savedmeals_new_meal_button).visibility = View.GONE
-        }
         return view
     }
 

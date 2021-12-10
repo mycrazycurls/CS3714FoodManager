@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.MenuRes
 import androidx.fragment.app.DialogFragment
 import com.example.foodieplanner.databinding.FormNewMealBinding
@@ -59,22 +60,39 @@ class NewMealDialog: DialogFragment() {
         binding.newMealTopBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.new_meal_save -> {
-                    val name: String = binding.mealNameInput.text.toString()
-                    val ingredients: ArrayList<Ingredient> = arrayListOf()
-                    val instructions: ArrayList<String> = arrayListOf()
-                    for (ingredient in ingredientAdapter!!.dataSet) {
-                        ingredients.add(ingredient)
+                    if (!isNumber(binding.inputCalories.text.toString())) {
+                        Toast.makeText(context, "Please enter an integer for calories", Toast.LENGTH_SHORT)
+                        false
                     }
-                    for (instruction in recipeAdapter!!.data) {
-                        instructions.add(instruction)
+                    else {
+                        var name = "No name"
+                        if (binding.mealNameInput.text.toString() != "") {
+                            name = binding.mealNameInput.text.toString()
+                        }
+                        val ingredients: ArrayList<Ingredient> = arrayListOf()
+                        val instructions: ArrayList<String> = arrayListOf()
+                        for (ingredient in ingredientAdapter!!.dataSet) {
+                            ingredients.add(ingredient)
+                        }
+                        for (instruction in recipeAdapter!!.data) {
+                            instructions.add(instruction)
+                        }
+                        val rating = binding.mealRatingBar.getRating()
+                        var calories = 0
+                        if (binding.inputCalories.text.toString() != "") {
+                            calories = binding.inputCalories.text.toString().toInt()
+                        }
+                        var cost = "No cost"
+                        if (binding.inputCalories.text.toString() != "") {
+                            cost = binding.inputCost.text.toString()
+                        }
+                        val meal = Meal(name, ingredients, instructions, albumName, rating, calories, cost)
+                        model.addMeal(meal)
+                        this.dismiss()
+                        true
+
                     }
-                    val rating = binding.mealRatingBar.getRating()
-                    val calories = binding.inputCalories.text.toString().toInt()
-                    var cost = binding.inputCost.text.toString()
-                    val meal = Meal(name, ingredients, instructions, albumName, rating, calories, cost)
-                    model.addMeal(meal)
-                    this.dismiss()
-                    true
+
                 }
                 else -> false
             }
@@ -94,6 +112,10 @@ class NewMealDialog: DialogFragment() {
         }
 
         return binding.root
+    }
+
+    private fun isNumber(s: String?): kotlin.Boolean {
+        return if (s.isNullOrEmpty()) false else s.all { Character.isDigit(it) }
     }
 
     private fun showMenu(v: View, @MenuRes menuRes: Int) {
