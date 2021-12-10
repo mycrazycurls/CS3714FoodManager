@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentHomeBinding
@@ -27,6 +28,7 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(layoutInflater)
 
         var calendar: Calendar = Calendar.getInstance()
+        val month = SimpleDateFormat("MMM")
         val dayOfWeek = SimpleDateFormat("EEEE")
         val dayOfMonth = SimpleDateFormat("dd")
 
@@ -37,36 +39,22 @@ class HomeFragment : Fragment() {
         while (i>0) {
             adapter.addCalendarDay(
                 CalendarDay(
+                    month.format(calendar.time),
                     dayOfWeek.format(calendar.time),
                     dayOfMonth.format(calendar.time),
                     "3 meals", "2000 cals", "$25"
                 )
             )
-            calendar.add(Calendar.DAY_OF_MONTH,1)
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
             i--
         }
-
-
-
-        return return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        return binding.root
     }
 
 
     inner class CalendarDayCardAdapter: RecyclerView.Adapter<CalendarDayCardViewHolder>() {
 
         var data = arrayListOf<CalendarDay>()
-//            calendarDay("","16","3 meals","2000 cals","$25"),
-//            calendarDay("Wednesday","17","3 meals","1500 cals","$34"),
-//            calendarDay("Thursday","18","4 meals","3000 cals","$60"),
-//            calendarDay("Friday","19","1 meal","1200 cals","$15"),
-//            calendarDay("Saturday","20","2 meals","2200 cals","$22"),
-//            calendarDay("Sunday","21","","",""),
-//            calendarDay("Monday","22","","",""),
-//        )
             set(value) {
                 field = value
                 notifyDataSetChanged()
@@ -91,7 +79,9 @@ class HomeFragment : Fragment() {
             }
 
             holder.cardView.setOnClickListener {
-                findNavController().navigate(R.id.action_homeFragment_to_dayFragment)
+                findNavController().navigate(R.id.action_homeFragment_to_dayFragment,
+                    bundleOf("month" to data.get(position).month,
+                "date" to data.get(position).date, "day" to data.get(position).day))
             }
         }
 
@@ -117,11 +107,10 @@ class HomeFragment : Fragment() {
 
 
     data class CalendarDay(
+        var month: String,
         var day: String,
         var date: String,
         var meals: String,
         var cals: String,
-        var price: String) {
-    }
-
+        var price: String)
 }

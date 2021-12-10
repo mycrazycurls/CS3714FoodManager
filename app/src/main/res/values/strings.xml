@@ -66,5 +66,6 @@
     <string name="album_card">albumn card</string>
     <string name="calories_hint">Calories</string>
     <string name="cost_hint">Cost</string>
+    <string name="submit_button">Submit</string>
 
 </resources>

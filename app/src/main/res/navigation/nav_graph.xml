@@ -58,5 +58,14 @@
         android:id="@+id/dayFragment"
         android:name="com.example.foodieplanner.DayFragment"
         android:label="fragment_day"
-        tools:layout="@layout/fragment_day" />
+        tools:layout="@layout/fragment_day" >
+        <action
+            android:id="@+id/action_dayFragment_to_pickMealsFragment"
+            app:destination="@id/pickMealsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pickMealsFragment"
+        android:name="com.example.foodieplanner.PickMealsFragment"
+        android:label="fragment_pick_meals"
+        tools:layout="@layout/fragment_pick_meals" />
 </navigation>

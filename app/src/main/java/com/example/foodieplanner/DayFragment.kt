@@ -1,27 +1,22 @@
 package com.example.foodieplanner
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentDayBinding
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DayFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DayFragment : Fragment() {
 
     private lateinit var binding: FragmentDayBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
-    }
+    var month: String? = null
+    var date: String? = null
+    var day: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,6 +24,12 @@ class DayFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentDayBinding.inflate(layoutInflater)
+
+        month = arguments?.getString("month")
+        date = arguments?.getString("date")
+        day = arguments?.getString("day")
+
+        binding.dayTopBar.title = day + ", " + month + " " + date
 
         val callback = object : ActionMode.Callback {
             override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
@@ -71,29 +72,14 @@ class DayFragment : Fragment() {
             }
         }
 
+        binding.addMealsToDay.setOnClickListener {
+            findNavController().navigate(R.id.action_dayFragment_to_pickMealsFragment,
+                bundleOf("month" to month, "date" to date))
+        }
+
 
         return binding.root
     }
-
-
-
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment DayFragment.
-         */
-        @JvmStatic
-        fun newInstance() =
-            DayFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
-
-
 
     inner class MealCardAdapter: RecyclerView.Adapter<MealCardViewHolder>() {
 

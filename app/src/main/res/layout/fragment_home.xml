@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:menu="@menu/main_menu"
-                app:title="Food Manager"
+                app:title="Meal Planner Pro"
                 app:titleCentered="true" />
 
         </com.google.android.material.appbar.AppBarLayout>
