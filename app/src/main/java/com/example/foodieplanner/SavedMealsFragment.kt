@@ -2,6 +2,7 @@ package com.example.foodieplanner
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType
@@ -102,6 +103,11 @@ class SavedMealsFragment : Fragment() {
                 .setView(input)
 
             dialogBuilder.show()
+        }
+
+        // Hide floating button in landscape mode
+        if (activity?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.savedmeals_new_meal_button).visibility = View.GONE
         }
         return view
     }

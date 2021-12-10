@@ -21,7 +21,7 @@
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/day_menu"
+            app:menu="@menu/main_menu"
             app:navigationIcon="@drawable/ic_day_navigation"
             app:title="Saved Meals"
             app:titleCentered="true" />

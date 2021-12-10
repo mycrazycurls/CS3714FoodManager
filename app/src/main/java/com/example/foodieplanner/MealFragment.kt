@@ -60,7 +60,7 @@ class MealFragment : Fragment() {
                                         when (ingrAttr.key) {
                                             "name" -> ingrName = ingrAttr.value.toString()
                                             "quantity" -> ingrQuantity = ingrAttr.value.toString()
-                                            "unit" -> ingrUnit = Unit.TSP
+                                            "unit" -> ingrUnit = toUnit(ingrAttr.value.toString())
                                             "measure" -> ingrMeasure = ingrAttr.value.toString()
                                             "standard" -> ingrStandard = ingrAttr.value.toString()
                                         }
@@ -76,6 +76,8 @@ class MealFragment : Fragment() {
                             "rating" -> {
                                 view.findViewById<RatingBar>(R.id.meal_rating_bar).rating = mealAttr.value.toString().toFloat()
                             }
+                            "calories" -> view.findViewById<TextView>(R.id.meal_calories).text = mealAttr.value.toString() + " calories"
+                            "cost" -> view.findViewById<TextView>(R.id.meal_cost).text = mealAttr.value.toString()
                         }
                     }
                 }
@@ -88,6 +90,27 @@ class MealFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun toUnit(str: String): Unit? {
+        when (str) {
+            "TSP" -> return Unit.TSP
+            "TBSP" -> return Unit.TBSP
+            "FLOZ" -> return Unit.FLOZ
+            "CUP"-> return Unit.CUP
+            "PINT:" -> return Unit.PINT
+            "QUART" -> return Unit.QUART
+            "GAL" -> return Unit.GAL
+            "ML" -> return Unit.ML
+            "LITER" -> return Unit.LITER
+            "LB" -> return Unit.LB
+            "OUNCE" -> return Unit.OUNCE
+            "GRAM" -> return Unit.GRAM
+            "MG" -> return Unit.MG
+            "KG" -> return Unit.KG
+            "NONE" -> return Unit.NONE
+        }
+        return Unit.NONE
     }
 
     inner class IngredientsAdapter(private val ingredientList: ArrayList<Ingredient>):
@@ -153,7 +176,7 @@ class MealFragment : Fragment() {
                 number.text = (pos+1).toString()
 
                 val instruction: TextView = itemView.findViewById(R.id.instruction_data)
-                instruction.text = instructionData + "."
+                instruction.text = instructionData
             }
         }
     }

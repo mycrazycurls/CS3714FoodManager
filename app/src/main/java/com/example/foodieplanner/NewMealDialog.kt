@@ -69,7 +69,9 @@ class NewMealDialog: DialogFragment() {
                         instructions.add(instruction)
                     }
                     val rating = binding.mealRatingBar.getRating()
-                    val meal = Meal(name, ingredients, instructions, albumName, rating)
+                    val calories = binding.inputCalories.text.toString().toInt()
+                    var cost = binding.inputCost.text.toString()
+                    val meal = Meal(name, ingredients, instructions, albumName, rating, calories, cost)
                     model.addMeal(meal)
                     this.dismiss()
                     true

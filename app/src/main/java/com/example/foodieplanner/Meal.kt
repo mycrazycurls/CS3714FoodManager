@@ -5,5 +5,7 @@ data class Meal(
     var ingredients: ArrayList<Ingredient>,
     var instructions: ArrayList<String>,
     var albumName: String,
-    var rating: Float
+    var rating: Float,
+    var calories: Int,
+    var cost: String
 )

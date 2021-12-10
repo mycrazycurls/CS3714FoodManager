@@ -64,5 +64,7 @@
     <string name="home_card_cals">1200 cals</string>
     <string name="home_card_price">$30</string>
     <string name="album_card">albumn card</string>
+    <string name="calories_hint">Calories</string>
+    <string name="cost_hint">Cost</string>
 
 </resources>

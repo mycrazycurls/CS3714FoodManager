@@ -78,6 +78,8 @@ class AlbumsFragment : Fragment() {
                 var instructions: ArrayList<String> = arrayListOf()
                 var album = ""
                 var rating = 0.0f
+                var calories = 0
+                var cost = ""
                 for (mealAttr in meal.children) {
                     when (mealAttr.key) {
                         "name" -> name = mealAttr.value.toString()
@@ -92,7 +94,7 @@ class AlbumsFragment : Fragment() {
                                     when (ingrAttr.key) {
                                         "name" -> ingrName = ingrAttr.value.toString()
                                         "quantity" -> ingrQuantity = ingrAttr.value.toString()
-                                        "unit" -> ingrUnit = Unit.TSP
+                                        "unit" -> ingrUnit = toUnit(ingrAttr.value.toString())
                                         "measure" -> ingrMeasure = ingrAttr.value.toString()
                                         "standard" -> ingrStandard = ingrAttr.value.toString()
                                     }
@@ -107,10 +109,12 @@ class AlbumsFragment : Fragment() {
                         }
                         "albumName" -> album = mealAttr.value.toString()
                         "rating" -> rating = mealAttr.value.toString().toFloat()
+                        "calories" -> calories = mealAttr.value.toString().toInt()
+                        "cost" -> cost = mealAttr.value.toString()
                     }
                 }
                 // Rebuild meal
-                val meal = Meal(name, ingredients, instructions, album, rating)
+                val meal = Meal(name, ingredients, instructions, album, rating, calories, cost)
 
                 // Display only items associated with album or all meals if
                 // "All Meals" button was pressed
@@ -125,6 +129,27 @@ class AlbumsFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun toUnit(str: String): Unit? {
+        when (str) {
+            "TSP" -> return Unit.TSP
+            "TBSP" -> return Unit.TBSP
+            "FLOZ" -> return Unit.FLOZ
+            "CUP"-> return Unit.CUP
+            "PINT:" -> return Unit.PINT
+            "QUART" -> return Unit.QUART
+            "GAL" -> return Unit.GAL
+            "ML" -> return Unit.ML
+            "LITER" -> return Unit.LITER
+            "LB" -> return Unit.LB
+            "OUNCE" -> return Unit.OUNCE
+            "GRAM" -> return Unit.GRAM
+            "MG" -> return Unit.MG
+            "KG" -> return Unit.KG
+            "NONE" -> return Unit.NONE
+        }
+        return Unit.NONE
     }
 
     inner class MealAdapter(private val mealList: ArrayList<Meal>):
