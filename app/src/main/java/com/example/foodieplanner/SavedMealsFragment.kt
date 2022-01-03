@@ -182,7 +182,7 @@ class SavedMealsFragment : Fragment() {
 
                 val image: ImageView = itemView.findViewById(R.id.album_card_image)
                 when (album) {
-                    "Breakfest" -> image.setImageResource(R.drawable.breakfast)
+                    "Breakfast" -> image.setImageResource(R.drawable.breakfast)
                     "Lunch" -> image.setImageResource(R.drawable.lunch)
                     "Dinner" -> image.setImageResource(R.drawable.dinner)
                     else -> image.setImageResource(R.drawable.default_pic)

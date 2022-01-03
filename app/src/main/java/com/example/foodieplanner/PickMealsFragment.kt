@@ -2,6 +2,7 @@ package com.example.foodieplanner
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,10 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
 import kotlin.random.Random
 
 class PickMealsFragment : Fragment() {
@@ -24,6 +29,8 @@ class PickMealsFragment : Fragment() {
 
     var month: String? = null
     var date: String? = null
+    var day: String? = null
+    var timeInMillis: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,8 +46,11 @@ class PickMealsFragment : Fragment() {
 
         month = arguments?.getString("month")
         date = arguments?.getString("date")
+        day = arguments?.getString("day")
+        timeInMillis = arguments?.getLong("timeInMillis")
 
-        // Load meals from firebase
+
+        //Load meals from firebase
         model.database.child("Meals").get().addOnSuccessListener { data ->
             for (meal in data.children) {
                 // Extract meal data
@@ -95,7 +105,8 @@ class PickMealsFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.submit_meals_button).setOnClickListener {
-            model.addMealsForDay(model.meals_for_day, month!!, date!!)
+            //model.addMealsForDay(model.meals_for_day, month!!, date!!)
+            model.addDay(model.meals_for_day, CalendarDay(month!!, day!!, date!!,timeInMillis!!))
             activity?.onBackPressed()
         }
 

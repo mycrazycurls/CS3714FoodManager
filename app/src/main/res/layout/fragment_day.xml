@@ -40,6 +40,7 @@
             android:padding="16dp">
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/day_header_cost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -49,6 +50,7 @@
                 android:textSize="16sp"></com.google.android.material.textview.MaterialTextView>
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/day_header_cals"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -57,6 +59,12 @@
                 android:textAlignment="center"
                 android:textSize="16sp"></com.google.android.material.textview.MaterialTextView>
         </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:dividerThickness="1dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/day_meal_recycler_view"

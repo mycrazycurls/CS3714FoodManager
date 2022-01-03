@@ -6,17 +6,23 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.TextView
 import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentDayBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
+import kotlin.math.cos
 
 class DayFragment : Fragment() {
 
     private lateinit var binding: FragmentDayBinding
+    private val model: Model by activityViewModels()
+    val adapter = MealCardAdapter()
 
-    var month: String? = null
-    var date: String? = null
-    var day: String? = null
+    //var datetime: CalendarDay? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,11 +31,14 @@ class DayFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentDayBinding.inflate(layoutInflater)
 
-        month = arguments?.getString("month")
-        date = arguments?.getString("date")
-        day = arguments?.getString("day")
+        val datetime = CalendarDay(arguments?.getString("month")!!,
+            arguments?.getString("day")!!,
+            arguments?.getString("date")!!,
+            arguments?.getLong("timeInMillis")!!)
 
-        binding.dayTopBar.title = day + ", " + month + " " + date
+        binding.dayTopBar.title = "${datetime.day}, ${datetime.month} ${datetime.date}"
+        binding.dayHeaderCals.text = "Calories\n0"
+        binding.dayHeaderCals.text = "Cost\n0"
 
         val callback = object : ActionMode.Callback {
             override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
@@ -55,7 +64,6 @@ class DayFragment : Fragment() {
             }
         }
 
-        val adapter = MealCardAdapter()
         binding.dayMealRecyclerView.adapter = adapter
 
         binding.dayTopBar.setNavigationOnClickListener {
@@ -73,27 +81,39 @@ class DayFragment : Fragment() {
         }
 
         binding.addMealsToDay.setOnClickListener {
+            model.meals_for_day = adapter.data
             findNavController().navigate(R.id.action_dayFragment_to_pickMealsFragment,
-                bundleOf("month" to month, "date" to date))
+                bundleOf("month" to datetime.month,
+                    "date" to datetime.date,
+                    "day" to datetime.day,
+                    "timeInMillis" to datetime.timeInMiliSeconds))
         }
 
+        // Pull meals
+        val locationListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get Post object and use the values to update the UI
+                adapter.clearMeals()
+                for (snapShot in dataSnapshot.children) {
+                    val meal = snapShot.getValue<Meal>()
+                    if (meal != null) {
+                        adapter.addMeal(meal)
+                    }
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.e("MainRetrieveData", "loadPost:onCancelled", databaseError.toException())
+            }
+        }
+        model.database.child("Dates").child(datetime.toSmallString()).child("meals").addValueEventListener(locationListener)
 
         return binding.root
     }
 
     inner class MealCardAdapter: RecyclerView.Adapter<MealCardViewHolder>() {
 
-        var data = arrayListOf<Pair<String,String>>(
-            Pair("Eggs and Toast","200 cals"),
-            Pair("Chicken and Rice","900 cals"),
-            Pair("Pot Roast","1200 cals"),
-            Pair("Apple Pie","500 cals")
-        )
-            set(value) {
-                field = value
-                notifyDataSetChanged()
-            }
-
+        var data = arrayListOf<Meal>()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MealCardViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
@@ -102,18 +122,53 @@ class DayFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: MealCardViewHolder, position: Int) {
-            holder.title.text = data.get(position).first
-            holder.subtitle.text = data.get(position).second
+            holder.title.text = data.get(position).name
+            holder.cost.text = "${data.get(position).cost}"
+            holder.calories.text = "Calories: ${data.get(position).calories}"
         }
 
         override fun getItemCount(): Int {
             return data.size
         }
 
+        fun addMeal(meal: Meal) {
+            data.add(meal)
+            binding.dayHeaderCals.text = "Calories\n${totals().second}"
+            binding.dayHeaderCost.text = "Cost\n\$%.2f".format(totals().first)
+            notifyDataSetChanged()
+        }
+
+        fun clearMeals() {
+            data.clear()
+        }
+
+        fun totals(): Pair<Double, Int> {
+            var totalCals = 0
+            var totalCost = 0.0
+            for (meal in data) {
+                var cal = meal.calories
+                var cost = meal.cost?.substring(1)?.toDouble()
+                if (cal != null) {
+                    totalCals += cal
+                }
+                if (cost != null) {
+                    totalCost += cost
+                }
+            }
+            return Pair(totalCost,totalCals)
+        }
+
+
+
+
+
     }
 
     inner class MealCardViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.day_meal_title)
-        val subtitle: TextView = view.findViewById(R.id.day_meal_subtitle)
+        val cost: TextView = view.findViewById(R.id.day_meal_cost)
+        val calories: TextView = view.findViewById(R.id.day_meal_calories)
     }
 }
+
+

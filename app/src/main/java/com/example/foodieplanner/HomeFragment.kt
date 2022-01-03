@@ -31,21 +31,27 @@ class HomeFragment : Fragment() {
         val month = SimpleDateFormat("MMM")
         val dayOfWeek = SimpleDateFormat("EEEE")
         val dayOfMonth = SimpleDateFormat("dd")
+        var timeTracker: Calendar = Calendar.getInstance()
+        timeTracker.timeInMillis = MaterialDatePicker.todayInUtcMilliseconds()
+        timeTracker.add(Calendar.DAY_OF_MONTH, -1)
 
         val adapter = CalendarDayCardAdapter()
         binding.homeRecyclerView.adapter = adapter
 
         var i = 7
         while (i>0) {
-            adapter.addCalendarDay(
-                CalendarDay(
+            adapter.addHomeDay(
+                HomeDay(
+                    CalendarDay(
                     month.format(calendar.time),
                     dayOfWeek.format(calendar.time),
                     dayOfMonth.format(calendar.time),
+                    timeTracker.timeInMillis),
                     "3 meals", "2000 cals", "$25"
                 )
             )
             calendar.add(Calendar.DAY_OF_MONTH, 1)
+            timeTracker.add(Calendar.DATE, 1)
             i--
         }
         return binding.root
@@ -54,7 +60,7 @@ class HomeFragment : Fragment() {
 
     inner class CalendarDayCardAdapter: RecyclerView.Adapter<CalendarDayCardViewHolder>() {
 
-        var data = arrayListOf<CalendarDay>()
+        var data = arrayListOf<HomeDay>()
             set(value) {
                 field = value
                 notifyDataSetChanged()
@@ -68,11 +74,11 @@ class HomeFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: CalendarDayCardViewHolder, position: Int) {
-            holder.date.text = data.get(position).date
-            holder.day.text = data.get(position).day
-            holder.meals.text = data.get(position).meals
-            holder.cals.text = data.get(position).cals
-            holder.price.text = data.get(position).price
+            holder.date.text = data.get(position).calendar.date
+            holder.day.text = data.get(position).calendar.day
+            //holder.meals.text = data.get(position).meals
+            //holder.cals.text = data.get(position).cals
+            //holder.price.text = data.get(position).price
 
             if (position == 0) {
                 holder.date.setTextColor(resources.getColor(R.color.exodus))
@@ -80,8 +86,10 @@ class HomeFragment : Fragment() {
 
             holder.cardView.setOnClickListener {
                 findNavController().navigate(R.id.action_homeFragment_to_dayFragment,
-                    bundleOf("month" to data.get(position).month,
-                "date" to data.get(position).date, "day" to data.get(position).day))
+                    bundleOf("month" to data.get(position).calendar.month,
+                "date" to data.get(position).calendar.date,
+                        "day" to data.get(position).calendar.day,
+                        "timeInMillis" to data.get(position).calendar.timeInMiliSeconds))
             }
         }
 
@@ -89,7 +97,7 @@ class HomeFragment : Fragment() {
             return data.size
         }
 
-        fun addCalendarDay(calendarDay: CalendarDay) {
+        fun addHomeDay(calendarDay: HomeDay) {
             data.add(calendarDay)
             notifyDataSetChanged()
         }
@@ -106,10 +114,8 @@ class HomeFragment : Fragment() {
     }
 
 
-    data class CalendarDay(
-        var month: String,
-        var day: String,
-        var date: String,
+    data class HomeDay(
+        var calendar: CalendarDay,
         var meals: String,
         var cals: String,
         var price: String)

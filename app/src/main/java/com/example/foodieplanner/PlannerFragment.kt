@@ -2,17 +2,21 @@ package com.example.foodieplanner
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.core.util.Pair
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentPlannerBinding
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointForward
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.datepicker.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
 import java.util.*
 
 
@@ -25,7 +29,8 @@ class PlannerFragment : Fragment() {
 
     private lateinit var binding: FragmentPlannerBinding
     private var groceryListRecyclerView: RecyclerView? = null
-
+    private val model: Model by activityViewModels()
+    val adapter = SingleLineItemAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,38 +51,109 @@ class PlannerFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentPlannerBinding.inflate(layoutInflater)
 
-        // Initial range of dates
+
         val today = MaterialDatePicker.todayInUtcMilliseconds()
-        val later = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-        later.timeInMillis = today
-        later.add(Calendar.DAY_OF_MONTH,5)
+        var days = arrayListOf<Day>()
+        var ingredients = arrayListOf<Ingredient>()
+        var startTime = today
+        var endTime = today
 
-        // Initialize date range text
-        //binding.planTopBar.title = milisecDateToString(today, later.timeInMillis)
-        //binding.planTopBar.subtitle = "Groceries"
-
-        // Configure dateRangePicker popup
-        val constraintsBuilder =
-            CalendarConstraints.Builder()
-                .setValidator(DateValidatorPointForward.now())
-        val dateRangePicker =
+        var dateRangePicker =
             MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Select dates")
-                .setSelection(
-                    Pair(
-                        today,
-                        later.timeInMillis
-                    )
-                )
-                .setCalendarConstraints(constraintsBuilder.build())
-                .build()
 
-        dateRangePicker.addOnDismissListener {
-            val pair = dateRangePicker.selection
-            if (pair?.first != null && pair.second != null)
-                //binding.planTopBar.title = milisecDateToString(pair.first, pair.second)
-                binding.planCalendarButton.text = milisecDateToString(pair.first, pair.second)
+        // Pull Days From Database
+        val locationListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get Post object and use the values to update the UI
+                adapter.clearIngredients()
+                for (snapShot in dataSnapshot.children) {
+                    val day = snapShot.getValue<Day>()
+                    if (day != null) {
+                        if (day.day?.timeInMiliSeconds!! >= today && !day.groceriesBought!!) {
+                            days.add(day)
+                        }
+                    }
+                }
+
+                if (days.size == 1) {
+                    startTime = days.get(0).day?.timeInMiliSeconds ?: today
+                    endTime = days.get(0).day?.timeInMiliSeconds ?: today
+                }
+                else if (days.size > 1) {
+                    startTime = days.get(0).day?.timeInMiliSeconds ?: today
+                    endTime = days.get(days.size-1).day?.timeInMiliSeconds ?: today
+                }
+
+                val constraints = CalendarConstraints.Builder()
+                    .setValidator(DateValidatorPointForward.now())
+                    .build()
+                dateRangePicker.setCalendarConstraints(constraints)
+                //dateRangePicker.setSelection(Pair(startTime, endTime))
+                var dateRangePickerBuilt = dateRangePicker.build()
+
+                dateRangePickerBuilt.addOnDismissListener {
+                    val pair = dateRangePickerBuilt.selection
+                    if (pair?.first != null && pair.second != null) {
+                        adapter.clearIngredients()
+                        binding.planCalendarButton.text =
+                            milisecDateToString(pair.first, pair.second)
+                        for (day in days) {
+                            for (meal in day.meals!!) {
+                                for (ig in meal.ingredients!!) {
+                                    adapter.addIngredient(ig)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                binding.planCalendarButton.setOnClickListener {
+                    activity?.let {
+                        dateRangePickerBuilt.show(
+                            it.supportFragmentManager,
+                            "groceryDateRange"
+                        )
+                    }
+                 }
+
+
+                binding.planCalendarButton.text = "Select Dates"
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.e("MainRetrieveData", "loadPost:onCancelled", databaseError.toException())
+            }
         }
+        model.database.child("Dates").addValueEventListener(locationListener)
+
+        // Initial range of dates
+
+        // Configure dateRangePicker popup
+//        val constraintsBuilder =
+//            CalendarConstraints.Builder()
+//                .setValidator(CompositeDateValidator.allOf(
+//                    listOf(DateValidatorPointForward.from(startTime),
+//                    DateValidatorPointBackward.before(endTime))
+//                ))
+//        val dateRangePicker =
+//            MaterialDatePicker.Builder.dateRangePicker()
+//                .setTitleText("Select dates")
+//                .setSelection(
+//                    Pair(
+//                        startTime,
+//                        endTime
+//                    )
+//                )
+//                .setCalendarConstraints(constraintsBuilder.build())
+//                .build()
+//
+//        dateRangePicker.addOnDismissListener {
+//            val pair = dateRangePicker.selection
+//            if (pair?.first != null && pair.second != null)
+//                //binding.planTopBar.title = milisecDateToString(pair.first, pair.second)
+//                binding.planCalendarButton.text = milisecDateToString(pair.first, pair.second)
+//        }
 
         // top bar configuration
 //      binding.planTopBar.setNavigationOnClickListener {
@@ -90,19 +166,22 @@ class PlannerFragment : Fragment() {
 //        }
 
         // open calendar picker
-        binding.planCalendarButton.setOnClickListener {
-            activity?.let {
-                dateRangePicker.show(
-                    it.supportFragmentManager,
-                    "groceryDateRange"
-                )
-            }
-        }
+//        binding.planCalendarButton.setOnClickListener {
+//            activity?.let {
+//                dateRangePicker.show(
+//                    it.supportFragmentManager,
+//                    "groceryDateRange"
+//                )
+//            }
+//        }
 
         // populate recycler view
-        val adapter = SingleLineItemAdapter()
         groceryListRecyclerView = binding.planGroceryListRecycler
         groceryListRecyclerView?.adapter = adapter
+
+        binding.plannerComplete.setOnClickListener {
+            adapter.clearIngredients()
+        }
 
         return return binding.root
     }
@@ -119,22 +198,7 @@ class PlannerFragment : Fragment() {
     // to populate recycler view
     inner class SingleLineItemAdapter: RecyclerView.Adapter<SingleLineItemViewHolder>() {
 
-        var data = arrayListOf<Pair<String,String>>(
-            Pair("Baking Soda","5 tsp"),
-            Pair("Flour","6 cups"),
-            Pair("Sugar","1/2 cup"),
-            Pair("Eggs","1 dozen"),
-            Pair("New York Strip","3"),
-            Pair("Bread Loaf","1"),
-            Pair("Cheddar Cheese","16 ounces"),
-            Pair("Milk","1 gallon"),
-            Pair("Tomato","5"),
-            Pair("Strawberries","2 lbs"),
-        )
-            set(value) {
-                field = value
-                notifyDataSetChanged()
-            }
+        var data = arrayListOf<Pair<String,String>>()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SingleLineItemViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
@@ -151,6 +215,15 @@ class PlannerFragment : Fragment() {
             return data.size
         }
 
+        fun addIngredient(ingredient: Ingredient) {
+            data.add(Pair(ingredient.name, ingredient.quToString()))
+            notifyDataSetChanged()
+        }
+
+        fun clearIngredients() {
+            data.clear()
+            notifyDataSetChanged()
+        }
 
     }
 
