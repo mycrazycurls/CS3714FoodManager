@@ -9,7 +9,6 @@ class Model: ViewModel() {
     var database: DatabaseReference = Firebase.database.reference
 
     var meals_for_day: ArrayList<Meal> = arrayListOf()
-    var latestCompleteDay: CalendarDay? = null
 
     fun addMeal(meal: Meal) {
         var name = meal.name
@@ -44,7 +43,7 @@ class Model: ViewModel() {
 
     fun addDay(meals: ArrayList<Meal>, calendarDay: CalendarDay) {
         if (!meals.isEmpty())
-            database.child("Dates").child(calendarDay.toSmallString()).setValue(Day(meals,calendarDay,false))
+            database.child("Dates").child("Incomplete").child(calendarDay.timeInMiliSeconds.toString()).setValue(Day(meals,calendarDay,false))
     }
 
 //    fun setValidRange(range: Pair<Long,Long>) {

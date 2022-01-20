@@ -106,7 +106,7 @@ class DayFragment : Fragment() {
                 Log.e("MainRetrieveData", "loadPost:onCancelled", databaseError.toException())
             }
         }
-        model.database.child("Dates").child(datetime.toSmallString()).child("meals").addValueEventListener(locationListener)
+        model.database.child("Dates").child("Incomplete").child(datetime.timeInMiliSeconds.toString()).child("meals").addValueEventListener(locationListener)
 
         return binding.root
     }

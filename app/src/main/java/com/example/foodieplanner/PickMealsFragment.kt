@@ -67,14 +67,14 @@ class PickMealsFragment : Fragment() {
                         "ingredients" -> {
                             for (ingredient in mealAttr.children) {
                                 var ingrName = ""
-                                var ingrQuantity = ""
+                                var ingrQuantity: Double? = null
                                 var ingrUnit: Unit? = null
                                 var ingrMeasure = ""
                                 var ingrStandard = ""
                                 for (ingrAttr in ingredient.children) {
                                     when (ingrAttr.key) {
                                         "name" -> ingrName = ingrAttr.value.toString()
-                                        "quantity" -> ingrQuantity = ingrAttr.value.toString()
+                                        "quantity" -> ingrQuantity = ingrAttr.value.toString().toDoubleOrNull()
                                         "unit" -> ingrUnit = toUnit(ingrAttr.value.toString())
                                         "measure" -> ingrMeasure = ingrAttr.value.toString()
                                         "standard" -> ingrStandard = ingrAttr.value.toString()

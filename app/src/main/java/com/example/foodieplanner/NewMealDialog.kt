@@ -202,7 +202,7 @@ class NewMealDialog: DialogFragment() {
         if (existingIngredient != null) {
             currentIngredient = existingIngredient
             nameTextField?.editText?.setText(existingIngredient.name)
-            quantityTextField?.editText?.setText(existingIngredient.quantity)
+            quantityTextField?.editText?.setText(existingIngredient.quantity.toString())
         }
 
         populateChipGroup(chipGroupUnit,currentIngredient)
@@ -273,10 +273,11 @@ class NewMealDialog: DialogFragment() {
                     quantityTextField.error = null
                     alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                         !nameTextField?.editText?.text.isNullOrBlank()
-                    currentIngredient.quantity = text.toString()
+                    currentIngredient.quantity = text.toString().toDoubleOrNull()
                 }
-
             }
+
+
 
         }
     }

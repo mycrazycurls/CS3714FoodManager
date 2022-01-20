@@ -1,6 +1,7 @@
 package com.example.foodieplanner
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentHomeBinding
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
-import java.time.ZoneId
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -27,13 +27,14 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater)
 
-        var calendar: Calendar = Calendar.getInstance()
         val month = SimpleDateFormat("MMM")
         val dayOfWeek = SimpleDateFormat("EEEE")
         val dayOfMonth = SimpleDateFormat("dd")
+        var calendar: Calendar = Calendar.getInstance()
+//        calendar.timeInMillis =
+
         var timeTracker: Calendar = Calendar.getInstance()
         timeTracker.timeInMillis = MaterialDatePicker.todayInUtcMilliseconds()
-        timeTracker.add(Calendar.DAY_OF_MONTH, -1)
 
         val adapter = CalendarDayCardAdapter()
         binding.homeRecyclerView.adapter = adapter
@@ -43,15 +44,15 @@ class HomeFragment : Fragment() {
             adapter.addHomeDay(
                 HomeDay(
                     CalendarDay(
-                    month.format(calendar.time),
-                    dayOfWeek.format(calendar.time),
-                    dayOfMonth.format(calendar.time),
+                    month.format(calendar.timeInMillis),
+                    dayOfWeek.format(calendar.timeInMillis),
+                    dayOfMonth.format(calendar.timeInMillis),
                     timeTracker.timeInMillis),
                     "3 meals", "2000 cals", "$25"
                 )
             )
             calendar.add(Calendar.DAY_OF_MONTH, 1)
-            timeTracker.add(Calendar.DATE, 1)
+            timeTracker.add(Calendar.DAY_OF_MONTH, 1)
             i--
         }
         return binding.root
