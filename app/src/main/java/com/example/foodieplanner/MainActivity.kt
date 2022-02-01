@@ -4,21 +4,28 @@ import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
+import androidx.activity.viewModels
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.foodieplanner.models.CalendarDay
+import com.example.foodieplanner.models.Day
+import com.example.foodieplanner.models.Meal
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +35,76 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val viewModel: Model by viewModels()
+
+        var database: DatabaseReference = Firebase.database.reference
+
+        // Firebase Days Listener
+        val daysListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var today = MaterialDatePicker.todayInUtcMilliseconds()
+                var days = arrayListOf<Day>()
+                for (snapShot in dataSnapshot.children) {
+                    val day = snapShot.getValue<Day>()
+                    val time = day?.day?.timeInMiliSeconds
+                    if (day != null && time != null && time >= today) {
+                        days.add(day)
+                    }
+                }
+                val size = days.size
+                loadRemainingDays(days)
+                if (size != days.size) {
+                    database.child("Days").setValue(days)
+                }
+                viewModel.days.postValue(days)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.e("MainRetrieveData", "loadPost:onCancelled", databaseError.toException())
+            }
+        }
+        database.child("Days").addValueEventListener(daysListener)
+
+        // Firebase Meals Listener
+        val mealsListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var savedMeals = arrayListOf<Meal>()
+                for (snapShot in dataSnapshot.children) {
+                    val meal = snapShot.getValue<Meal>()
+                    if (meal != null) {
+                        savedMeals.add(meal)
+                    }
+                }
+                viewModel.savedMeals.postValue(savedMeals)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.e("MainRetrieveData", "loadPost:onCancelled", databaseError.toException())
+            }
+        }
+        database.child("Meals").addValueEventListener(mealsListener)
+
+        // Firebase Albums Listener
+        val albumsListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var albums = arrayListOf<String>()
+                for (ss in snapshot.children) {
+                    val album = ss.getValue<String>()
+                    if (album != null) {
+                        albums.add(album)
+                    }
+                }
+                viewModel.albums.postValue(albums)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.e("MainRetrieveData", "loadPost:onCancelled", error.toException())
+            }
+        }
+        database.child("Albums").addValueEventListener(albumsListener)
+
 
         // toolbar
         //val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -58,6 +135,50 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun loadRemainingDays(days: ArrayList<Day>): ArrayList<Day> {
+
+        val month = SimpleDateFormat("MMM", Locale.US)
+        val dayOfWeek = SimpleDateFormat("EEEE", Locale.US)
+        val dayOfMonth = SimpleDateFormat("dd", Locale.US)
+
+        var today = MaterialDatePicker.todayInUtcMilliseconds()
+
+        var dayLimit: Calendar = Calendar.getInstance()
+        dayLimit.timeInMillis = today
+        dayLimit.add(Calendar.DAY_OF_MONTH, 7)
+
+        var latestDay = days[days.size-1]
+        var latestTime = latestDay.day?.timeInMiliSeconds
+
+        var calendar: Calendar = Calendar.getInstance()
+        var tracker: Calendar = Calendar.getInstance()
+        tracker.timeInMillis = today
+
+        if (latestTime != null) {
+            while (tracker.timeInMillis <= latestTime) {
+                tracker.add(Calendar.DAY_OF_MONTH,1)
+                calendar.add(Calendar.DAY_OF_MONTH,1)
+            }
+        }
+
+        while (tracker.timeInMillis <= dayLimit.timeInMillis) {
+            var day = Day(meals = null,
+                CalendarDay(
+                    month.format(calendar.timeInMillis),
+                    dayOfWeek.format(calendar.timeInMillis),
+                    dayOfMonth.format(calendar.timeInMillis),
+                    tracker.timeInMillis),
+                false
+            )
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+            tracker.add(Calendar.DAY_OF_MONTH, 1)
+            //adapter.addDay(day)
+            //viewModel.addDay(day)
+            days.add(day)
+        }
+        return days
     }
 
     private fun setupBottomNavMenu(navController: NavController) {

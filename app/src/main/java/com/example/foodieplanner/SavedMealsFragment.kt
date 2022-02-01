@@ -1,12 +1,9 @@
 package com.example.foodieplanner
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,19 +15,18 @@ import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlin.random.Random
 
 class SavedMealsFragment : Fragment() {
     private val model: Model by activityViewModels()
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private val albums = ArrayList<String>()
+    private var viewAdapter = AlbumAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,8 +37,14 @@ class SavedMealsFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.saved_meals_albums_list)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        viewAdapter = AlbumnAdapter(albums)
         recyclerView.adapter = viewAdapter
+
+        // make adapter observe view model
+        model.albums.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                viewAdapter.data = it
+            }
+        })
 
         // For deleting albums
         val itemTouchHelperCallback = object :
@@ -56,7 +58,7 @@ class SavedMealsFragment : Fragment() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                (viewAdapter as AlbumnAdapter).removeAlbum(viewHolder.adapterPosition)
+                viewAdapter.removeAlbum(viewHolder.adapterPosition)
             }
         }
 
@@ -64,11 +66,11 @@ class SavedMealsFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
         // Load albums from firebase
-        model.database.child("Albums").get().addOnSuccessListener { data ->
-            for (album in data.children) {
-                (viewAdapter as AlbumnAdapter).insertAlbum(album.value.toString())
-            }
-        }
+//        model.database.child("Albums").get().addOnSuccessListener { data ->
+//            for (album in data.children) {
+//                (viewAdapter as AlbumAdapter).insertAlbum(album.value.toString())
+//            }
+//        }
 
         view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.saved_meals_toolbar).setNavigationOnClickListener {
             activity?.onBackPressed()
@@ -84,7 +86,7 @@ class SavedMealsFragment : Fragment() {
         // View all meals
         if (activity?.resources?.configuration?.orientation != Configuration.ORIENTATION_LANDSCAPE) {
             view.findViewById<Button>(R.id.saved_meals_all_meals_button).setOnClickListener {
-                (viewAdapter as AlbumnAdapter).clearAlbumList()
+                (viewAdapter as AlbumAdapter).clearAlbumList()
                 view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment,
                     bundleOf("albumName" to "All_"))
             }
@@ -101,7 +103,8 @@ class SavedMealsFragment : Fragment() {
                     .setPositiveButton("Save") { dialog, id ->
                         val albumName: String = input.text.toString()
                         if (albumName != "") {
-                            (viewAdapter as AlbumnAdapter).insertAlbum(albumName)
+                            //(viewAdapter as AlbumAdapter).insertAlbum(albumName)
+                            model.addAlbum(albumName)
                         }
                     }
                     .setNegativeButton("Cancel") { dialog, id -> }
@@ -120,80 +123,69 @@ class SavedMealsFragment : Fragment() {
 
         val transaction = fragmentManager?.beginTransaction()
         transaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        if (transaction != null) {
-            transaction.add(android.R.id.content, newFragment)
-                .addToBackStack(null)
-                .commit()
-        }
+        transaction?.add(android.R.id.content, newFragment)?.addToBackStack(null)?.commit()
     }
 
-    inner class AlbumnAdapter(private val albumList: ArrayList<String>):
-        RecyclerView.Adapter<AlbumnAdapter.ViewHolder>() {
+    inner class AlbumAdapter(): RecyclerView.Adapter<AlbumAdapterViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val v = LayoutInflater.from(parent.context).inflate(
-                R.layout.card_saved_meals_album,
-                parent, false
-            )
-            return ViewHolder(v)
+        var data = arrayListOf<String>()
+            set(value) {
+                field = value
+                notifyDataSetChanged()
+            }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlbumAdapterViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
+            val view = inflater.inflate(R.layout.card_saved_meals_album, parent, false)
+            return AlbumAdapterViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bindItems(albumList[position])
+        override fun onBindViewHolder(holder: AlbumAdapterViewHolder, position: Int) {
+            holder.title.text = data.get(position)
+
+            holder.image.setBackgroundColor(getRandomColor())
+
+            holder.itemView.setOnClickListener {
+                it.let {
+                    it.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment,
+                        bundleOf("albumName" to data.get(position)))
+                }
+            }
+
         }
 
-        fun insertAlbum(album: String) {
-            albumList.add(album)
-            notifyDataSetChanged()
-            model.addAlbum(album)
-        }
+//        fun insertAlbum(album: String) {
+//            model.addAlbum(album)
+//        }
 
         fun removeAlbum(pos: Int) {
-            model.deleteAlbum(albumList[pos])
-            albumList.removeAt(pos)
+            model.deleteAlbum(data[pos])
+            data.removeAt(pos)
             notifyItemRemoved(pos)
-            notifyItemRangeChanged(pos, albumList.size)
+            notifyItemRangeChanged(pos, data.size)
         }
 
         fun clearAlbumList() {
-            albumList.clear()
+            data.clear()
         }
 
         private fun getRandomColor(): Int {
             val rand = Random.nextInt(0, 3)
             when (rand) {
-                0 -> return Color.BLACK
-                1 -> return Color.DKGRAY
-                2 -> return Color.GRAY
-                3 -> return Color.LTGRAY
+                0 -> return R.color.softblue
+                1 -> return R.color.rosyhiglight
+                2 -> return R.color.brewedmustard
+                3 -> return R.color.creamypeach
             }
-            return Color.BLACK
+            return R.color.grisilla
         }
 
-        override fun getItemCount() = albumList.size
+        override fun getItemCount() = data.size
 
-        inner class ViewHolder(private val view: View) :
-            RecyclerView.ViewHolder(view) {
-            fun bindItems(album: String) {
-                val title: TextView = itemView.findViewById(R.id.meal_card_title)
-                val cardColor: Int = getRandomColor()
-                title.setBackgroundColor(cardColor)
-                title.text = album
+    }
 
-                val image: ImageView = itemView.findViewById(R.id.album_card_image)
-                when (album) {
-                    "Breakfast" -> image.setImageResource(R.drawable.breakfast)
-                    "Lunch" -> image.setImageResource(R.drawable.lunch)
-                    "Dinner" -> image.setImageResource(R.drawable.dinner)
-                    else -> image.setImageResource(R.drawable.default_pic)
-                }
-
-                itemView.setOnClickListener {
-                    clearAlbumList()
-                    view.findNavController().navigate(R.id.action_savedMealsFragment_to_albumsFragment,
-                        bundleOf("albumName" to album))
-                }
-            }
-        }
+    inner class AlbumAdapterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val title: TextView = itemView.findViewById(R.id.meal_card_title)
+            val image: ImageView = itemView.findViewById(R.id.album_card_image)
     }
 }

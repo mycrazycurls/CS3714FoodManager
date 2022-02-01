@@ -46,90 +46,81 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_meal_name"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:hint="@string/meal_name_hint">
 
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/new_meal_name"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/meal_name_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/meal_name_hint">
+                    android:imeOptions="actionDone"
+                    android:singleLine="true" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/meal_name_input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
-                    android:id="@+id/new_meal_album_select"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_marginVertical="-8dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/new_meal_album_select" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_meal_album_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:hint="Select Album">
 
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/input_calories_layout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <AutoCompleteTextView
+                    android:id="@+id/new_meal_select_album"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/calories_hint">
+                    android:inputType="none" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/input_calories"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_cost_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:hint="@string/cost_hint">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/input_cost_layout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_cost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/cost_hint">
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:singleLine="true" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/input_cost"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_calories_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:hint="@string/calories_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_calories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <RatingBar
                 android:id="@+id/meal_rating_bar"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
@@ -201,8 +192,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 
         </LinearLayout>

@@ -15,5 +15,15 @@
     <color name="grisilla">#57606f</color>
     <color name="exodus">#6c5ce7</color>
 
+    <!-- Blues -->
+    <color name="softblue">#778beb</color>
+
+    <!-- Yellows -->
+    <color name="rosyhiglight">#f7d794</color>
+
+    <!-- Oranges -->
+    <color name="creamypeach">#f3a683</color>
+
+    <color name="brewedmustard">#e77f67</color>
 
 </resources>

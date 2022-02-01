@@ -2,7 +2,6 @@ package com.example.foodieplanner
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,12 +11,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
+import com.example.foodieplanner.models.Meal
 import kotlin.random.Random
 
 class PickMealsFragment : Fragment() {
@@ -27,10 +24,9 @@ class PickMealsFragment : Fragment() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private val meals = ArrayList<Meal>()
 
-    var month: String? = null
-    var date: String? = null
-    var day: String? = null
-    var timeInMillis: Long? = null
+    // Compiles all the meals selected by the user to be uploaded to the day
+    private val selectedMeals = arrayListOf<Meal>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,61 +40,12 @@ class PickMealsFragment : Fragment() {
         viewAdapter = MealAdapter(meals)
         recyclerView.adapter = viewAdapter
 
-        month = arguments?.getString("month")
-        date = arguments?.getString("date")
-        day = arguments?.getString("day")
-        timeInMillis = arguments?.getLong("timeInMillis")
-
-
-        //Load meals from firebase
-        model.database.child("Meals").get().addOnSuccessListener { data ->
-            for (meal in data.children) {
-                // Extract meal data
-                var name = ""
-                var ingredients: ArrayList<Ingredient> = arrayListOf()
-                var instructions: ArrayList<String> = arrayListOf()
-                var album = ""
-                var rating = 0.0f
-                var calories = 0
-                var cost = ""
-                for (mealAttr in meal.children) {
-                    when (mealAttr.key) {
-                        "name" -> name = mealAttr.value.toString()
-                        "ingredients" -> {
-                            for (ingredient in mealAttr.children) {
-                                var ingrName = ""
-                                var ingrQuantity: Double? = null
-                                var ingrUnit: Unit? = null
-                                var ingrMeasure = ""
-                                var ingrStandard = ""
-                                for (ingrAttr in ingredient.children) {
-                                    when (ingrAttr.key) {
-                                        "name" -> ingrName = ingrAttr.value.toString()
-                                        "quantity" -> ingrQuantity = ingrAttr.value.toString().toDoubleOrNull()
-                                        "unit" -> ingrUnit = toUnit(ingrAttr.value.toString())
-                                        "measure" -> ingrMeasure = ingrAttr.value.toString()
-                                        "standard" -> ingrStandard = ingrAttr.value.toString()
-                                    }
-                                }
-                                ingredients.add(Ingredient(ingrName, ingrQuantity, ingrUnit, ingrMeasure, ingrStandard))
-                            }
-                        }
-                        "instructions" -> {
-                            for (instruction in mealAttr.children) {
-                                instructions.add(instruction.value.toString())
-                            }
-                        }
-                        "albumName" -> album = mealAttr.value.toString()
-                        "rating" -> rating = mealAttr.value.toString().toFloat()
-                        "calories" -> calories = mealAttr.value.toString().toInt()
-                        "cost" -> cost = mealAttr.value.toString()
-                    }
-                }
-                // Rebuild meal
-                val meal = Meal(name, ingredients, instructions, album, rating, calories, cost)
-                (viewAdapter as MealAdapter).insertMeal(meal)
+        //Load meals from Firebase to adapter for recycler
+        model.savedMeals.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                (viewAdapter as MealAdapter).setMeals(it)
             }
-        }
+        })
 
         view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.pick_meals_album_toolbar).setNavigationOnClickListener {
             activity?.onBackPressed()
@@ -106,7 +53,8 @@ class PickMealsFragment : Fragment() {
 
         view.findViewById<Button>(R.id.submit_meals_button).setOnClickListener {
             //model.addMealsForDay(model.meals_for_day, month!!, date!!)
-            model.addDay(model.meals_for_day, CalendarDay(month!!, day!!, date!!,timeInMillis!!))
+            //model.addDay(model.meals_for_day, CalendarDay(month!!, day!!, date!!,timeInMillis!!))
+            model.addMealsToDay(selectedMeals)
             activity?.onBackPressed()
         }
 
@@ -149,6 +97,12 @@ class PickMealsFragment : Fragment() {
             holder.bindItems(mealList[position])
         }
 
+        fun setMeals(meals: ArrayList<Meal>) {
+            mealList.clear()
+            mealList.addAll(meals)
+            notifyDataSetChanged()
+        }
+
         fun insertMeal(meal: Meal) {
             mealList.add(meal)
             notifyDataSetChanged()
@@ -182,7 +136,8 @@ class PickMealsFragment : Fragment() {
                 image.setImageResource(R.drawable.default_pic)
 
                 itemView.setOnClickListener {
-                    model.meals_for_day.add(meal)
+                    //model.meals_for_day.add(meal)
+                    selectedMeals.add(meal)
                     Toast.makeText(context, meal.name + " added!", Toast.LENGTH_SHORT)
                 }
             }

@@ -1,28 +1,30 @@
 package com.example.foodieplanner
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foodieplanner.databinding.FragmentDayBinding
+import com.example.foodieplanner.models.CalendarDay
+import com.example.foodieplanner.models.Meal
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
-import kotlin.math.cos
 
 class DayFragment : Fragment() {
 
     private lateinit var binding: FragmentDayBinding
     private val model: Model by activityViewModels()
     val adapter = MealCardAdapter()
-
-    //var datetime: CalendarDay? = null
+    var actionMode: ActionMode? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,12 +33,10 @@ class DayFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentDayBinding.inflate(layoutInflater)
 
-        val datetime = CalendarDay(arguments?.getString("month")!!,
-            arguments?.getString("day")!!,
-            arguments?.getString("date")!!,
-            arguments?.getLong("timeInMillis")!!)
+        var selectedDay = model.selectedDay?.let { model.days.value?.get(it) }
 
-        binding.dayTopBar.title = "${datetime.day}, ${datetime.month} ${datetime.date}"
+        val datetime = selectedDay?.day
+        binding.dayTopBar.title = "${datetime?.day}, ${datetime?.month} ${datetime?.date}"
         binding.dayHeaderCals.text = "Calories\n0"
         binding.dayHeaderCals.text = "Cost\n0"
 
@@ -52,15 +52,18 @@ class DayFragment : Fragment() {
 
             override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
                 return when (item?.itemId) {
-                    R.id.delete -> {
+                    R.id.contextual_delete -> {
                         // Handle delete icon press
+                        adapter.deleteSelected()
+                        mode?.finish()
                         true
                     }
                     else -> false
                 }
             }
-
             override fun onDestroyActionMode(mode: ActionMode?) {
+                actionMode = null
+                adapter.clearSelected()
             }
         }
 
@@ -72,9 +75,14 @@ class DayFragment : Fragment() {
         binding.dayTopBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.day_toolbar_edit -> {
-                    val actionMode = activity?.startActionMode(callback)
-                    actionMode?.title = "1 selected"
-                    true
+                    when (actionMode) {
+                        null -> {
+                            actionMode = activity?.startActionMode(callback)
+                            actionMode?.title = "0 Selected"
+                            true
+                        }
+                        else -> false
+                    }
                 }
                 else -> false
             }
@@ -82,11 +90,7 @@ class DayFragment : Fragment() {
 
         binding.addMealsToDay.setOnClickListener {
             model.meals_for_day = adapter.data
-            findNavController().navigate(R.id.action_dayFragment_to_pickMealsFragment,
-                bundleOf("month" to datetime.month,
-                    "date" to datetime.date,
-                    "day" to datetime.day,
-                    "timeInMillis" to datetime.timeInMiliSeconds))
+            findNavController().navigate(R.id.action_dayFragment_to_pickMealsFragment)
         }
 
         // Pull meals
@@ -106,7 +110,7 @@ class DayFragment : Fragment() {
                 Log.e("MainRetrieveData", "loadPost:onCancelled", databaseError.toException())
             }
         }
-        model.database.child("Dates").child("Incomplete").child(datetime.timeInMiliSeconds.toString()).child("meals").addValueEventListener(locationListener)
+        model.database.child("Days").child(model.selectedDay.toString()).child("meals").addValueEventListener(locationListener)
 
         return binding.root
     }
@@ -114,6 +118,7 @@ class DayFragment : Fragment() {
     inner class MealCardAdapter: RecyclerView.Adapter<MealCardViewHolder>() {
 
         var data = arrayListOf<Meal>()
+        var selected = arrayListOf<Meal>()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MealCardViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
@@ -125,10 +130,42 @@ class DayFragment : Fragment() {
             holder.title.text = data.get(position).name
             holder.cost.text = "${data.get(position).cost}"
             holder.calories.text = "Calories: ${data.get(position).calories}"
+            holder.view.setCardBackgroundColor(Color.WHITE)
+            holder.view.isSelected = false
+
+            holder.view.setOnClickListener {
+                when (actionMode) {
+                    null -> {
+
+                    }
+                    else -> {
+                        holder.view.isSelected = !holder.view.isSelected
+                        if (holder.view.isSelected) {
+                            holder.view.setCardBackgroundColor(Color.LTGRAY)
+                            selected.add(data.get(position))
+                            actionMode?.title = "${selected.size} Selected"
+                        }
+                        else {
+                            holder.view.setCardBackgroundColor(Color.WHITE)
+                            selected.remove(data.get(position))
+                            actionMode?.title = "${selected.size} Selected"
+                        }
+                    }
+                }
+            }
         }
 
         override fun getItemCount(): Int {
             return data.size
+        }
+
+        fun clearSelected() {
+            selected.clear()
+            notifyDataSetChanged()
+        }
+
+        fun deleteSelected() {
+            model.removeMealsFromDay(selected)
         }
 
         fun addMeal(meal: Meal) {
@@ -140,14 +177,15 @@ class DayFragment : Fragment() {
 
         fun clearMeals() {
             data.clear()
+            notifyDataSetChanged()
         }
 
-        fun totals(): Pair<Double, Int> {
+        private fun totals(): Pair<Double, Int> {
             var totalCals = 0
             var totalCost = 0.0
             for (meal in data) {
                 var cal = meal.calories
-                var cost = meal.cost?.substring(1)?.toDouble()
+                var cost = meal.cost
                 if (cal != null) {
                     totalCals += cal
                 }
@@ -159,15 +197,13 @@ class DayFragment : Fragment() {
         }
 
 
-
-
-
     }
 
     inner class MealCardViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.day_meal_title)
         val cost: TextView = view.findViewById(R.id.day_meal_cost)
         val calories: TextView = view.findViewById(R.id.day_meal_calories)
+        val view: CardView = view.findViewById(R.id.day_card_view)
     }
 }
 

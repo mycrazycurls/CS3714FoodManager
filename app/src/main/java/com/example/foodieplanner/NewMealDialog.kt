@@ -3,19 +3,17 @@ package com.example.foodieplanner
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.LinearLayout
-import android.widget.PopupMenu
-import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.MenuRes
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import com.example.foodieplanner.databinding.FormNewMealBinding
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
+import com.example.foodieplanner.models.Ingredient
+import com.example.foodieplanner.models.Meal
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
@@ -24,17 +22,19 @@ class NewMealDialog: DialogFragment() {
     private val model: Model by activityViewModels()
 
     private lateinit var binding: FormNewMealBinding
-    private val toolbar: MaterialToolbar? = null
     private val standardVolumes = arrayListOf(Unit.TSP,Unit.TBSP,Unit.FLOZ,Unit.CUP,Unit.PINT,Unit.QUART,Unit.GAL)
     private val metricVolumes = arrayListOf(Unit.ML,Unit.LITER)
     private val standardWeights = arrayListOf(Unit.LB,Unit.OUNCE)
     private val metricWeights = arrayListOf(Unit.MG,Unit.GRAM,Unit.KG)
 
     private val ingredientsList = ArrayList<Ingredient>()
-    private var albumName = "None"
 
     private var ingredientAdapter: IngredientAdapter? = null
     private var recipeAdapter: InstructionAdapter? = null
+
+    companion object {
+        const val ALBUM_DEFAULT = "None"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,18 +52,16 @@ class NewMealDialog: DialogFragment() {
         recipeAdapter = InstructionAdapter()
         binding.recipeRecycler.adapter = recipeAdapter
 
+        // When "X" is clicked on the navigation bar cancel the new meal dialog
         binding.newMealTopBar.setNavigationOnClickListener {
             this.dialog?.cancel()
             this.dismiss()
         }
+
+        //
         binding.newMealTopBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.new_meal_save -> {
-                    if (!isNumber(binding.inputCalories.text.toString())) {
-                        Toast.makeText(context, "Please enter an integer for calories", Toast.LENGTH_SHORT)
-                        false
-                    }
-                    else {
                         var name = "No name"
                         if (binding.mealNameInput.text.toString() != "") {
                             name = binding.mealNameInput.text.toString()
@@ -81,17 +79,16 @@ class NewMealDialog: DialogFragment() {
                         if (binding.inputCalories.text.toString() != "") {
                             calories = binding.inputCalories.text.toString().toInt()
                         }
-                        var cost = "No cost"
+                        var cost = 0.00
                         if (binding.inputCalories.text.toString() != "") {
-                            cost = binding.inputCost.text.toString()
+                            cost = binding.inputCost.text.toString().toDouble()
                         }
-                        val meal = Meal(name, ingredients, instructions, albumName, rating, calories, cost)
+
+                        var album = binding.newMealAlbumMenu.editText?.text.toString()
+                        val meal = Meal(name, ingredients, instructions, album, rating, calories, cost)
                         model.addMeal(meal)
                         this.dismiss()
                         true
-
-                    }
-
                 }
                 else -> false
             }
@@ -105,38 +102,25 @@ class NewMealDialog: DialogFragment() {
             openInstructionDialog()
         }
 
-        val albumSelectButton = binding.newMealAlbumSelect
-        albumSelectButton.setOnClickListener { v: View ->
-            showMenu(v, R.menu.album_select_menu)
-        }
-
-        return binding.root
-    }
-
-    private fun isNumber(s: String?): kotlin.Boolean {
-        return if (s.isNullOrEmpty()) false else s.all { Character.isDigit(it) }
-    }
-
-    private fun showMenu(v: View, @MenuRes menuRes: Int) {
-        val popup = PopupMenu(requireContext(), v)
-        popup.menuInflater.inflate(menuRes, popup.menu)
-
+        var albumList = arrayListOf<String>()
         model.database.child("Albums").get().addOnSuccessListener { data ->
+            albumList.add(ALBUM_DEFAULT)
             for (album in data.children) {
-                Log.d("Testing", album.value.toString())
-                popup.menu.add(album.value.toString())
+                Log.e("NewMealDialog", album.value.toString())
+                albumList.add(album.value.toString())
             }
         }
 
-        popup.setOnMenuItemClickListener { menuItem: MenuItem ->
-            albumName = menuItem.title.toString()
-            true
-        }
+        model.albums.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                var albumArrayAdapter = ArrayAdapter(requireContext(), R.layout.view_simple_spinner_list_item, it)
+                binding.newMealSelectAlbum.setAdapter(albumArrayAdapter)
+            }
+        })
 
-        popup.show()
+
+        return binding.root
     }
-
-
 
     fun openInstructionDialog(existingInstruction: String? = null, pos: Int? = null) {
         val view: View? = this.layoutInflater.inflate(R.layout.form_new_instruction,null)

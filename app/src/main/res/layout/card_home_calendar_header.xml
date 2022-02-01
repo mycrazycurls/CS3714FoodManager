@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/home_card_view"
+    android:id="@+id/home_card_header_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/exodus"
     app:cardElevation="3dp"
     app:cardMaxElevation="3dp">
 
     <LinearLayout
-        android:id="@+id/home_card_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
@@ -20,23 +20,24 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/home_card_day"
+                android:id="@+id/home_card_header_day"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/home_card_day"
                 android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp" />
+                android:textColor="@color/white"
+                android:textSize="32sp" />
 
             <TextView
-                android:id="@+id/home_card_date"
+                android:id="@+id/home_card_header_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/home_card_date"
-                android:textSize="34sp"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textColor="@color/white"
+                android:textSize="68sp" />
 
         </LinearLayout>
 
@@ -46,31 +47,34 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/home_card_meals"
+                android:id="@+id/home_card_header_meals"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:textAlignment="textEnd"
                 android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?android:attr/textColorSecondary" />
+                android:textColor="@color/white"
+                android:textSize="28sp" />
 
             <TextView
-                android:id="@+id/home_card_cals"
+                android:id="@+id/home_card_header_cals"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:textAlignment="textEnd"
                 android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?android:attr/textColorSecondary" />
+                android:textColor="@color/white"
+                android:textSize="28sp" />
 
             <TextView
-                android:id="@+id/home_card_price"
+                android:id="@+id/home_card_header_price"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:textAlignment="textEnd"
                 android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?android:attr/textColorSecondary" />
+                android:textColor="@color/white"
+                android:textSize="28sp" />
         </LinearLayout>
 
     </LinearLayout>

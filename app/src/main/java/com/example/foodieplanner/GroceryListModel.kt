@@ -1,8 +1,9 @@
 package com.example.foodieplanner
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.foodieplanner.models.Day
+import com.example.foodieplanner.models.Ingredient
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -10,7 +11,7 @@ import kotlin.collections.ArrayList
 class GroceryListModel: ViewModel() {
 
     var dateRange: MutableLiveData<ArrayList<Long>> = MutableLiveData(arrayListOf())
-    var days: MutableLiveData<ArrayList<Day>> = MutableLiveData(arrayListOf())
+    //var days: MutableLiveData<ArrayList<Day>> = MutableLiveData(arrayListOf())
 
     fun updateRange(first: Long, second: Long) {
         var timeList = arrayListOf<Long>()
@@ -39,39 +40,41 @@ class GroceryListModel: ViewModel() {
         return Pair(dateRangeCopy[0],dateRangeCopy[dateRangeCopy.size-1])
     }
 
-    fun getIngredients(): ArrayList<Ingredient> {
+    fun getIngredients(days: ArrayList<Day>): ArrayList<Ingredient> {
         val newIngredients = arrayListOf<Ingredient>()
         var dateRangeCopy = dateRange.value
-        var daysCopy = days.value
-        if (dateRangeCopy != null && daysCopy != null) {
-            for (day in daysCopy) {
+        if (dateRangeCopy != null && days != null) {
+            for (day in days) {
                 if (day.day?.timeInMiliSeconds in dateRangeCopy) {
-                    for (meal in day.meals!!) {
-                        for (ing in meal.ingredients!!) {
-                            var nQuantity = ing.quantity
-                            var nUnit = ing.unit
+                    var meals = day.meals
+                    if (meals != null) {
+                        for (meal in meals) {
+                            var ingredients = meal.ingredients
+                            if (ingredients != null) {
+                                for (ing in ingredients) {
+                                    var nQuantity = ing.quantity
+                                    var nUnit = ing.unit
 
-                            if (ing in newIngredients) {
-                                var eIndex = newIngredients.indexOf(ing)
-                                var eQuantity = newIngredients[eIndex].quantity
-                                var eUnit = newIngredients[eIndex].unit
-                                var conversion = nUnit?.convertTo(eUnit)
+                                    if (ing in newIngredients) {
+                                        var eIndex = newIngredients.indexOf(ing)
+                                        var eQuantity = newIngredients[eIndex].quantity
+                                        var eUnit = newIngredients[eIndex].unit
+                                        var conversion = nUnit?.convertTo(eUnit)
 
-                                if (nQuantity != null && eQuantity != null && conversion != null) {
-                                    if (conversion < 1.0) {
-                                        newIngredients[newIngredients.indexOf(ing)].quantity = eQuantity + nQuantity*conversion
-                                    }
-                                    else {
-                                        newIngredients[newIngredients.indexOf(ing)].unit = nUnit
-                                        newIngredients[newIngredients.indexOf(ing)].quantity = eQuantity/conversion + nQuantity
+                                        if (nQuantity != null && eQuantity != null && conversion != null) {
+                                            if (conversion < 1.0) {
+                                                newIngredients[newIngredients.indexOf(ing)].quantity = eQuantity + nQuantity*conversion
+                                            } else {
+                                                newIngredients[newIngredients.indexOf(ing)].unit = nUnit
+                                                newIngredients[newIngredients.indexOf(ing)].quantity = eQuantity/conversion + nQuantity
+                                            }
+                                        } else {
+                                            newIngredients.add(ing.copy())
+                                        }
+                                    } else {
+                                        newIngredients.add(ing.copy())
                                     }
                                 }
-                                else {
-                                    newIngredients.add(ing.copy())
-                                }
-                            }
-                            else {
-                                newIngredients.add(ing.copy())
                             }
                         }
                     }

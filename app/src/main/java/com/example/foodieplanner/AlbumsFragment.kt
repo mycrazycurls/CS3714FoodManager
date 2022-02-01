@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlin.random.Random
 
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.example.foodieplanner.models.Ingredient
+import com.example.foodieplanner.models.Meal
 
 class AlbumsFragment : Fragment() {
     private val model: Model by activityViewModels()
@@ -79,7 +81,7 @@ class AlbumsFragment : Fragment() {
                 var album = ""
                 var rating = 0.0f
                 var calories = 0
-                var cost = ""
+                var cost: Double? = 0.0
                 for (mealAttr in meal.children) {
                     when (mealAttr.key) {
                         "name" -> name = mealAttr.value.toString()
@@ -110,7 +112,7 @@ class AlbumsFragment : Fragment() {
                         "albumName" -> album = mealAttr.value.toString()
                         "rating" -> rating = mealAttr.value.toString().toFloat()
                         "calories" -> calories = mealAttr.value.toString().toInt()
-                        "cost" -> cost = mealAttr.value.toString()
+                        "cost" -> cost = mealAttr.value.toString().toDoubleOrNull()
                     }
                 }
                 // Rebuild meal

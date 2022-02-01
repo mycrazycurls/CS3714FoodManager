@@ -1,4 +1,4 @@
-package com.example.foodieplanner
+package com.example.foodieplanner.models
 
 data class Day(
     var meals: ArrayList<Meal>? = null,

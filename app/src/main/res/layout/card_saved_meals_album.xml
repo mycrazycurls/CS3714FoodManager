@@ -10,20 +10,26 @@
 
         <ImageView
             android:id="@+id/album_card_image"
-            android:contentDescription="@string/album_card"
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:background="@color/black"
+            android:contentDescription="@string/album_card"
             android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/meal_card_title"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/meal_card_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="Dinner"
+                android:textAppearance="?attr/textAppearanceHeadline6" />
+        </LinearLayout>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

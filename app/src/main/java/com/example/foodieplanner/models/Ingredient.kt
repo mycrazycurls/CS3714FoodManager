@@ -1,7 +1,8 @@
-package com.example.foodieplanner
+package com.example.foodieplanner.models
 
+import com.example.foodieplanner.R
+import com.example.foodieplanner.Unit
 import com.google.firebase.database.Exclude
-import kotlin.reflect.typeOf
 
 data class Ingredient(
     var name: String? = null,

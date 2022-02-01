@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.foodieplanner.models.Ingredient
 
 class MealFragment : Fragment() {
     private val model: Model by activityViewModels()
@@ -65,7 +66,9 @@ class MealFragment : Fragment() {
                                             "standard" -> ingrStandard = ingrAttr.value.toString()
                                         }
                                     }
-                                    (ingredientViewAdapter as IngredientsAdapter).insertIngredient(Ingredient(ingrName, ingrQuantity, ingrUnit, ingrMeasure, ingrStandard))
+                                    (ingredientViewAdapter as IngredientsAdapter).insertIngredient(
+                                        Ingredient(ingrName, ingrQuantity, ingrUnit, ingrMeasure, ingrStandard)
+                                    )
                                 }
                             }
                             "instructions" -> {
