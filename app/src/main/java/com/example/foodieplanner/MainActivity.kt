@@ -148,9 +148,12 @@ class MainActivity : AppCompatActivity() {
         var dayLimit: Calendar = Calendar.getInstance()
         dayLimit.timeInMillis = today
         dayLimit.add(Calendar.DAY_OF_MONTH, 7)
+        var latestTime: Long? = null
 
-        var latestDay = days[days.size-1]
-        var latestTime = latestDay.day?.timeInMiliSeconds
+        if (!days.isEmpty()) {
+            val latestDay = days[days.size - 1]
+            latestTime = latestDay.day?.timeInMiliSeconds
+        }
 
         var calendar: Calendar = Calendar.getInstance()
         var tracker: Calendar = Calendar.getInstance()

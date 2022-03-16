@@ -32,7 +32,6 @@ class HomeFragment : Fragment() {
                 adapter.submitList(it)
             }
         })
-        binding.homeRecyclerView
 
         return binding.root
     }

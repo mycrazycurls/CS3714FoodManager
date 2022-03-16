@@ -12,14 +12,21 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
+import com.example.foodieplanner.adapters.IngredientAdapter
 import com.example.foodieplanner.models.Ingredient
 import com.example.foodieplanner.models.Meal
+import com.example.foodieplanner.viewmodels.IngredientFormViewModel
+import com.example.foodieplanner.viewmodels.MealViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
 
+// TODO put a view model for ingrdient and instruciton dialogs so that editing existing ingredients
+// is easier to manage
 class NewMealDialog: DialogFragment() {
     private val model: Model by activityViewModels()
+    private val ingredientFormViewModel: IngredientFormViewModel by activityViewModels()
+    private val mealViewModel: MealViewModel by activityViewModels()
 
     private lateinit var binding: FormNewMealBinding
     private val standardVolumes = arrayListOf(Unit.TSP,Unit.TBSP,Unit.FLOZ,Unit.CUP,Unit.PINT,Unit.QUART,Unit.GAL)
@@ -29,7 +36,7 @@ class NewMealDialog: DialogFragment() {
 
     private val ingredientsList = ArrayList<Ingredient>()
 
-    private var ingredientAdapter: IngredientAdapter? = null
+    private lateinit var ingredientAdapter: IngredientAdapter
     private var recipeAdapter: InstructionAdapter? = null
 
     companion object {
@@ -45,8 +52,15 @@ class NewMealDialog: DialogFragment() {
         binding = FormNewMealBinding.inflate(layoutInflater)
 
         // Set adapter for ingredient list
-        ingredientAdapter = IngredientAdapter(ingredientsList)
+        ingredientAdapter = IngredientAdapter { pos -> openIngredientDialog(pos) }
         binding.ingredientsRecycler.adapter = ingredientAdapter
+
+        // Observe the ingredients from the model to update the recycler view
+        mealViewModel.ingredients.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                ingredientAdapter.submitList(it)
+            }
+        })
 
         // Set adapter for instruction list
         recipeAdapter = InstructionAdapter()
@@ -58,7 +72,7 @@ class NewMealDialog: DialogFragment() {
             this.dismiss()
         }
 
-        //
+        // callback for when "SAVE" button is clicked to save ingredient
         binding.newMealTopBar.setOnMenuItemClickListener { menuItem ->
             when(menuItem.itemId) {
                 R.id.new_meal_save -> {
@@ -68,7 +82,9 @@ class NewMealDialog: DialogFragment() {
                         }
                         val ingredients: ArrayList<Ingredient> = arrayListOf()
                         val instructions: ArrayList<String> = arrayListOf()
-                        for (ingredient in ingredientAdapter!!.dataSet) {
+
+                        // TODO pull list from view model instead
+                        for (ingredient in ingredientAdapter.currentList) {
                             ingredients.add(ingredient)
                         }
                         for (instruction in recipeAdapter!!.data) {
@@ -106,7 +122,6 @@ class NewMealDialog: DialogFragment() {
         model.database.child("Albums").get().addOnSuccessListener { data ->
             albumList.add(ALBUM_DEFAULT)
             for (album in data.children) {
-                Log.e("NewMealDialog", album.value.toString())
                 albumList.add(album.value.toString())
             }
         }
@@ -174,7 +189,8 @@ class NewMealDialog: DialogFragment() {
         }
     }
 
-    fun openIngredientDialog(existingIngredient: Ingredient? = null, pos: Int? = null) {
+    //TODO use data binding and view model to update form based on existing or new ingredient
+    fun openIngredientDialog(pos: Int? = null) {
         val view: View? = this.layoutInflater.inflate(R.layout.form_new_ingredient,null)
         val quantityTextField = view?.findViewById<TextInputLayout>(R.id.ni_text_field_quantity)
         val nameTextField = view?.findViewById<TextInputLayout>(R.id.ni_text_field_name)
@@ -183,11 +199,16 @@ class NewMealDialog: DialogFragment() {
         val chipGroupAmount = view?.findViewById<ChipGroup>(R.id.ni_chip_group_amount)
 
         var currentIngredient = Ingredient()
-        if (existingIngredient != null) {
-            currentIngredient = existingIngredient
-            nameTextField?.editText?.setText(existingIngredient.name)
-            quantityTextField?.editText?.setText(existingIngredient.quantity.toString())
+
+        if (pos != null) {
+            var existingIngredient = mealViewModel.ingredients.value?.get(pos)
+            if (existingIngredient != null) {
+                currentIngredient = existingIngredient
+                nameTextField?.editText?.setText(existingIngredient.name)
+                quantityTextField?.editText?.setText(existingIngredient.quantity.toString())
+            }
         }
+
 
         populateChipGroup(chipGroupUnit,currentIngredient)
 
@@ -218,22 +239,22 @@ class NewMealDialog: DialogFragment() {
                 .setPositiveButton("Save") { dialog, which ->
                     // Respond to positive button press
                     if (pos != null) {
-                        ingredientAdapter?.editIngredient(pos, currentIngredient)
+                        mealViewModel.updateIngredient(pos, currentIngredient)
                     }
                     else {
-                        ingredientAdapter?.addIngredient(currentIngredient)
+                        mealViewModel.addIngredient(currentIngredient)
                     }
                 }
                 .setNegativeButton("Delete") { dialog, which ->
                     if (pos != null) {
-                        ingredientAdapter?.deleteIngredient(pos)
+                        mealViewModel.removeIngredient(pos)
                     }
                 }
                 .create()
             alertDialog.setCanceledOnTouchOutside(false)
             alertDialog.show()
-            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = existingIngredient != null
-            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = existingIngredient != null
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = pos != null
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = pos != null
 
             // handle error on text fields
             nameTextField?.editText?.addTextChangedListener { text ->
@@ -260,8 +281,6 @@ class NewMealDialog: DialogFragment() {
                     currentIngredient.quantity = text.toString().toDoubleOrNull()
                 }
             }
-
-
 
         }
     }
@@ -359,52 +378,6 @@ class NewMealDialog: DialogFragment() {
             chip.isChecked = true
         }
         return chip
-    }
-
-    // New Ingredients to Populate Recycler View
-    inner class IngredientAdapter(val dataSet: ArrayList<Ingredient>):
-        RecyclerView.Adapter<NewMealDialog.IngredientViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewMealDialog.IngredientViewHolder {
-            val layoutInflater = LayoutInflater.from(parent.context)
-            val view = layoutInflater.inflate(R.layout.view_new_meal_ingredient, parent, false)
-            return IngredientViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {
-            holder.text.text = dataSet[position].name
-            holder.quantity.text = dataSet[position].quToString()
-
-            holder.text.setOnClickListener {
-                openIngredientDialog(dataSet[position], position)
-            }
-        }
-
-        override fun getItemCount(): Int {
-            return dataSet.size
-        }
-
-        fun addIngredient(ingredient: Ingredient?) {
-            if (ingredient != null) {
-                dataSet.add(ingredient)
-                notifyDataSetChanged()
-            }
-        }
-
-        fun editIngredient(index: Int, ingredient: Ingredient) {
-            dataSet[index] = ingredient
-            notifyDataSetChanged()
-        }
-
-        fun deleteIngredient(pos: Int) {
-            dataSet.removeAt(pos)
-            notifyDataSetChanged()
-        }
-    }
-
-    inner class IngredientViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val text: TextView = view.findViewById(R.id.new_meal_ingredient_text)
-        val quantity: TextView = view.findViewById(R.id.new_meal_ingredient_quantity)
     }
 
 

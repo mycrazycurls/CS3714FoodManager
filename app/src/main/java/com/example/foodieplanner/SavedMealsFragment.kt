@@ -184,6 +184,7 @@ class SavedMealsFragment : Fragment() {
 
     }
 
+    //TODO Remove
     inner class AlbumAdapterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val title: TextView = itemView.findViewById(R.id.meal_card_title)
             val image: ImageView = itemView.findViewById(R.id.album_card_image)

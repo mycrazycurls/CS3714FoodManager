@@ -33,7 +33,7 @@ class CalendarDayCardHeaderViewHolder(view: View): RecyclerView.ViewHolder(view)
         val cost = totals(data.meals).first
         price.text = if (cost != 0.0) "Price: $cost" else ""
 
-        cardView.setOnClickListener {
+        itemView.setOnClickListener {
             onItemClicked(adapterPosition)
         }
     }
